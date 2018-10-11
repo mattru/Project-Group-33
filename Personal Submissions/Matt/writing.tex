@@ -1,0 +1,33 @@
+\documentclass[10pt,journal,draftclsnofoot,onecolumn]{IEEEtran}
+\renewcommand{\familydefault}{sf}
+\usepackage[margin=.75in]{geometry}
+\usepackage{setspace}
+\usepackage{url}
+\bibliographystyle{IEEEtran}
+
+
+
+\begin{document}
+\begin{singlespace}
+\begin{titlepage}
+\title{CS461 Fall 2018: Problem Statement}
+\author{Matthew Ruder}
+\maketitle
+\section{Abstract}
+This document serves to define the core issue with current methods of animal tracking. The goal of this project is to reduce the cost of tracking forest animals and obtain reliable data. To address this issue, drones were declared a viable option if mounted with VHF antennae. With proper design and programming, the drones would be able to successfully locate tagged creatures, essentially reducing the amount of time, cost, and effort into tracking these animals. In essence, drones shall be utilized to automate the tracking of these animals. In addition, altitude, wind, area coverage, and expenses shall be taken into consideration when designing these drones. 
+\thispagestyle{empty}
+\end{titlepage}
+
+
+
+
+\section{Problem Description}
+Tracking animals is straightforward within open environments using GPS tracking; however, using a GPS unit in densely forested areas, such as the Pacific Northwest, results in poor tracking signals. Current methods of tracking forest creatures involves utilizing VHF radio technology. Selected animals are given radio tags, which emit a specific radio frequency that is picked up by VHF antennae. VHF antennae require manual assistance in order to successfully track creatures; as such, the cost of tracking using VHF antennae is above \$100,000. The ultimate goal of the project is to reduce the cost of tracking forest animals while obtaining reliable data. In order to accomplish this, several steps must be taken to construct a proper solution. The main objective is finding a VHF signal. The device designed must be able to receive VHF signals within densely forested areas. If the device cannot accomplish this task, then it does not solve the problem. Secondly, considering the device is automated within a large region of forest, the time taken by it is indefinite; as such, battery life must be taken into account. The constructed device must be able to last an indefinite amount of time when locating animals. In addition, the device must be able to cover a wide range of forest in order to fulfill its task. The solution must cover the largest amount of area over the shortest amount of time to be considered effective and acceptable by the client.
+
+\section{Proposed Solution}
+As stated within the problem section, tracking creatures within densely forested areas is costly within the Pacific Northwest. To fully automate the process of tracking creatures, drones equipped with VHF antennae will enable wildlife researches indicators as to where tagged creatures are currently located. One of the proposed solutions involves designing a single drone equipped with a VHF antenna to patrol a designated route above the tree line. The biggest issue using this method is the battery of the drone must last a long time and charge quickly, otherwise it would be ineffective at searching or slower at searching than by hand respectively. To counteract this, fixed wing drones shall be used for increased flight speed along designated paths. With this style of flight, searching may return less accurate location information; therefore, the deployment of multiple drones shall be implemented as to reduce flight path and increase the number of paths for greater accuracy. In addition, this would decrease the general flight time per drone and overall battery consumption. To address the issue of battery life, the construction of drone charging platforms across the forest shall enable drones to remotely recharge their battery life; as a side effect, drones can now patrol specific areas of the forest rather than starting from a central base camp and scouting. If certain methods of communication were setup with the drone platforms, then data could be transmitted back to a central base camp, enabling researchers to autonomously locate animals in the shortest amount of time. As an additional feature, various sensor data on the drone, such as temperature, pressure, and humidity, can be recorded for each drone's area, essentially providing extra information of the regions of the forest.
+
+\section{Performance Metrics}
+The end result of this project must result in a working prototype or multiple prototypes that can cover at least 100 square kilometers of radio tracking. The drones must be able to fly above the tree line of mountainous forested areas without crashing. The agreed upon cost of each drone should fall within the \$6,000 affordable range. The components and blueprints of each drone must be listed and printed such that the drones may be reproduced in the future. Programming and code of each drone must be available to the client with instructions on how to program the drones. The prototype should be able to collect data without manual intervention or assistance. The drones must locate animals faster than manual tracking. The data collect must accurately locate an animal within the forest. 
+\end{singlespace}
+\end{document}
