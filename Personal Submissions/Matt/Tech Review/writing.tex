@@ -2,7 +2,6 @@
 \usepackage{graphicx}
 \usepackage{url}
 \usepackage{setspace}
-\bibliographystyle{IEEEtran}
 
 \usepackage{geometry}
 \geometry{textheight=9.5in, textwidth=7in}
@@ -63,7 +62,7 @@
         }
         \begin{abstract}
         % 6. Fill in your abstract    
-        	This document serves to divide the core issue with current methods of animal tracking into individual system components. The goal of this project is to reduce the cost of tracking forest animals and obtain reliable data. To address this issue, drones were declared a viable option if mounted with VHF antennas. With proper design and programming, the drones would be able to successfully locate tagged creatures, essentially reducing the amount of time, cost, and effort into tracking these animals. By addressing the individual components of the project, drones shall be constructed to automate the tracking of these animals. 
+        	This document serves to divide the core issue with current methods of animal tracking into individual system components. The goal of this project is to reduce the cost of tracking forest animals and obtain reliable data. To address this issue, drones were declared a viable option if mounted with VHF antennas. With proper design and programming, the drones would be able to successfully locate tagged creatures, essentially reducing the amount of time, cost, and effort into tracking these animals. The components addressed in this document include drone frame, battery, and data processing software. By addressing the individual components of the project, the drones assembled shall be specialized and optimal for the tracking of these animals. 
         \end{abstract}     
     \end{singlespace}
 \end{titlepage}
@@ -99,15 +98,15 @@ A cheaper alternative to the two batteries would be the Panasonic NCR 18650B Lit
 \section{Tech Piece 3: Tools and Languages}
 During the flight of the drone, the VHF antennas will be collecting and storing the frequency of signals received over time. Post-flight software will need to be utilized in order to translate collected data points into comprehensible and useful positional information. In addition, the coding languages utilized alongside these tools shall be investigated within this section.
 \subsection{Tools and Languages Option 1}
-One of the possible data processing modules to use is MATLAB, where the RTL-SDR receiver acquires Aeronatical VDL2 data link messages and are processed using MATLAB. For example, designfilt() and filtfit() functions can be used to filter out ambient noise within the data set. In essence of technicality, MATLAB can be used to filter, demodulate, and time-sync data acquired by the VHF receiver.[5]
+One of the possible data processing modules to use is MATLAB, where the RTL-SDR receiver acquires Aeronatical VDL2 data link messages and are processed using MATLAB. For example, designfilt() and filtfit() functions can be used to filter out ambient noise within the data set. MATLAB has libraries built for demodulation of VHF data. In essence of technicality, MATLAB can be used to filter, demodulate, and time-sync data acquired by the VHF receiver.[5]
 \subsection{Tools and Languages Option 2}
-Python as a possible method for RTL-SDR data processing. In addition, the response offers heavy insight into VHF signal detection, listing instructions on how to optimize data collection quality and performance.[6]
+Python as a possible method for RTL-SDR data processing. In addition, the response offers heavy insight into VHF signal detection, listing instructions on how to optimize data collection quality and performance. Similar to MATLAB, Python has demodulation libraries to transform the VHF data.[6]
 \subsection{Tools and Languages Option 3}
-Airspy offers a pre-built software-defined radio package known as SDR\# or SDRSharp, which features built-in signal analysis and demodulation. The software is capable of listening to VHF signals and is compatible with any RTL-SDR receivers.[7]
+Airspy offers a pre-built software-defined radio package known as SDR\# or SDRSharp, which features built-in signal analysis and demodulation. The software is capable of listening to VHF signals and is compatible with any RTL-SDR receivers. Unlike MATLAB and Python, SDRSharp has a user interface designed for signal analysis.[7]
 
 \section{Conclusion}
-The proposed completion of the project is when a working drone is delivered with capability of recording GPS coordinates and direction of strongest signal relative to itself. By selecting the proper frame, battery, and data translation software, the project will be several steps closer to completion. If the project solution can be used as a replacement to the current manual process of tracking animals, then the project will be considered a success. Ideally, the system should be able to handle data in densely forested areas. The end result of this project must result in a working prototype or multiple prototypes that can cover at least 100 square kilometers of radio tracking. The drones must be able to fly above the tree line of mountainous forested areas without crashing. The agreed upon cost of each drone should fall within the \$6,000 replication cost. The components and blueprints of each drone must be listed and printed such that the drones may be reproduced in the future. Programming and code of each drone must be available to the client with instructions on how to program the drones. The prototype should be able to collect data without manual intervention or assistance. The drones must locate animals faster than manual tracking. The data collected must accurately locate an animal within the forest. 
-
+In order to meet the project requirements of the client, the technical features of the drone must be thoroughly investigated. Such features include the drone frame, battery, and data processing software. The completion of the project is fulfilled when a functional drone is delivered with the capability of recording GPS coordinates and direction of strongest signal relative to itself. By selecting the proper frame, battery, and data processing software, the project will be several steps closer to completion. Ideally, the drone frame should be able to handle data in densely forested areas. The battery must last long enough such that the drone can cover at least 100 square kilometers while using VHF equipment. In addition, the drones must be able to fly above the tree line of mountainous forested areas without crashing. The receiver data needs to be translated and demodulated into readable data expected by the client. When purchasing these components, the total cost of each drone should fall within the \$6,000 range. The components and blueprints of each drone must be listed and printed such that the drones may be reproduced in the future. Programming and code of each drone must be available to the client with instructions on how to program the drones. If the project solution can be used as a replacement to the current manual process of tracking animals, then the project will be considered a success.
+\bibliographystyle{IEEEtran}
 \nocite{*}
 \bibliography{references}
 \end{document}
