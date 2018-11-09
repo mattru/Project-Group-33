@@ -1,0 +1,194 @@
+\documentclass[onecolumn, 10pt, compsoc]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage[numbers]{natbib}
+
+\usepackage{geometry}
+\geometry{textheight=9.5in, textwidth=7in}
+
+% 1. Fill in these details
+\def \CapstoneTeamName{		TaalSquad}
+\def \CapstoneTeamNumber{		33}
+\def \CapstoneProjectName{		The Autonomous Animal Locator}
+\def \CapstoneSponsorCompany{	Levi Lab, Department of Fisheries and Wildlife, Oregon State University}
+\def \CapstoneSponsorPerson{		Taal Levi}
+\def \GroupMemberOne{			Camden Sladcik}
+
+% 2. Uncomment the appropriate line below so that the document type works
+\def \DocType{	%Problem Statement
+				%Requirements Document
+				Technology Review
+				%Design Document
+				%Progress Report
+				}
+			
+\newcommand{\NameSigPair}[1]{\par
+\makebox[2.75in][r]{#1} \hfil 	\makebox[3.25in]{\makebox[2.25in]{\hrulefill} \hfill		\makebox[.75in]{\hrulefill}}
+\par\vspace{-12pt} \textit{\tiny\noindent
+\makebox[2.75in]{} \hfil		\makebox[3.25in]{\makebox[2.25in][r]{Signature} \hfill	\makebox[.75in][r]{Date}}}}
+% 3. If the document is not to be signed, uncomment the RENEWcommand below
+\renewcommand{\NameSigPair}[1]{#1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\begin{titlepage}
+    \pagenumbering{gobble}
+    \begin{singlespace}
+        \hfill 
+        % 4. If you have a logo, use this includegraphics command to put it on the coversheet.
+        %\includegraphics[height=4cm]{CompanyLogo}   
+        \par\vspace{.2in}
+        \centering
+        \scshape{
+            \huge CS Capstone \DocType \par
+            {\large\today}\par
+            \vspace{.5in}
+            \textbf{\Huge\CapstoneProjectName}\par
+            \vfill
+            {\large Prepared for}\par
+            \Huge \CapstoneSponsorCompany\par
+            \vspace{5pt}
+            {\Large\NameSigPair{\CapstoneSponsorPerson}\par}
+            {\large Prepared by }\par
+            \CapstoneTeamName\par 
+            \vspace{5pt}
+            {\Large
+                \NameSigPair{\GroupMemberOne}\par
+            }
+            \vspace{20pt}
+        }
+        \begin{abstract}
+        This document's main purpose is to examine technology options for 3 aspects of The Autonomous Animal Locator. The three aspects covered in this review are VTOL fixed wing drones available, drone flight controllers for autonomous flight, and software/api to be used for data visualization over a map of the flight area. The goal of this document is to explore areas of the project to find the best technology to get the job done. Each section covers three different technologies and compares/contrasts them. Each section is ended with a conclusion and a chosen best technology.
+        \end{abstract}     
+    \end{singlespace}
+\end{titlepage}
+\newpage
+\pagenumbering{arabic}
+\tableofcontents
+% 7. uncomment this (if applicable). Consider adding a page break.
+%\listoffigures
+%\listoftables
+\clearpage
+
+% 8. now you write!
+\section{VTOL Fixed Wing Drone}
+Vertical Take Off and Landing (VTOL) aircraft are a classification of aircraft that are capable of starting flight in the vertical direction before transitioning to forward movement. Examples of VTOL aircraft include all helicopters and some fixed wing aircraft like the Boeing V-22 Osprey and the Lockheed Martin F-35 Lightning II. The drone for our project needs to cover around 100 square kilometers while on mission. Fixed wing drones have longer flight times than multirotor drones\cite{DroneTypes}, so they seem like the best option for this application. Longer flight times denote fewer trips back to the operator to change the battery, which leads to faster area coverage. However, the caveat of fixed wing drones in this application is that they require a larger amount of space for takeoffs and landings. Finding an appropriately sized area for launch and recovery will prove difficult in the forest operating area of interest. This is why a VTOL fixed wing drone is appealing. The ability to takeoff and land on the spot, but still have better flight times, area coverage, and payload capacity than a multirotor drone \cite{DroneTypes} is why we are exploring this option further.
+\subsection{Commercially Developed Drone}
+There are currently very few commercial VTOL drone products on the market today. Many of the ones currently available are not only overpriced, but also oversized for our application. Complete drones currently available can cost up to \$20k. The cheaper priced drones don’t include a ground station which will add to cost. A few options available today include:
+\begin{itemize}
+    \item \href{http://www.altiuas.com/transition/}{ALTi Transition}
+    \item \href{https://www.quantum-systems.com/trinity/}{Quantum-Systems Trinity}
+\end{itemize}
+\subsection{Prebuilt}
+These options are not ready to go out of the box. They require some important aspect to become flight ready. Most prebuilt VTOL drones come with the frame and all necessary motors/propellers. However, they lack batteries, flight controllers, and connection hardware to send and receive flight information from the ground station. Prebuilt option: 
+\begin{itemize}
+    \item \href{https://www.foxtechfpv.com/foxtech-hunter-290-vtol-aircraft.html}{Foxtech HUNTER}
+\end{itemize}
+\subsection{DIY}
+DIY or Do It Yourself is a project in and of itself. This could be the least expensive option, given you have enough drone knowledge and experience. It could also be a deeply expensive money pit due to limited technical specifications of parts on most product pages. Building a VTOL drone from the ground up would start with an airframe. The easiest way to accomplish this would be to acquire a fixed wing remote control plane and modify it for VTOL. This would be accomplished by attaching four upward facing motors on struts attached to the wings. Two motors fore and two aft of the wings. Essentially, strap multirotor components to a fixed wing drone to combine the two. Example of a DIY VTOL Drone project: 
+\begin{itemize}
+    \item \href{https://www.instructables.com/id/Quadplane-Hybrid-Drone/}{Example DIY VTOL Project}
+\end{itemize}
+\subsection{Conclusion}
+Coming to a conclusion depends on the client's willingness to spend funds on a drone. A fully developed commercial drone will leave little room for the modifications we need to make. It will also cost the most. Since there are very few prebuilt options on the market currently, the best course of action for this project will be to modify an existing fixed wing drone for vertical takeoffs and landings.
+
+
+\section{Flight Controller}
+A flight controller is the main piece of hardware for any autonomous aircraft. They are used as the brains of the vehicle. The flight controller takes in data from the sensors on the aircraft (GPS, gyroscopes, compass, accelerometer, barometer, etc.) then calculates the best input commands to give to the motors/servos to keep on the planned course. A flight controller is a small computer (microcontroller) purpose built for drones. It is the piece of hardware that is mission critical for the project. There are many options for flight controllers on the market, but we need one that is capable of autopiloting our aircraft. The two most common autopilot software are ArduPilot and PX4. They are both open-source and work on many platforms. Each flight controller examined below is capable of running ArduPilot as well as PX4. 
+\subsection{PixHawk}
+The PixHawk series of autopilot flight controllers are one of the most used and developed flight controllers for this application. The original PixHawk was developed in 2008 \cite{HistoryPixHawk}. It was made from the ground up for drone autopiloting. The PixHawk is currently on the fourth version. It costs around \$200 \cite{PixHawkPrice} depending on the source, but previous version can be had at lower cost. Unfortunately, it doesn’t have any onboard wireless connectivity, like Wi-Fi or Bluetooth. 
+\begin{itemize}
+    \item Technical Specs \cite{PixHawkSpecs}
+    \begin{itemize}
+        \item Main Processor
+        \begin{itemize}
+            \item 32-bit Arm Processor, 168 Mhz, 2MB cache, 512KB RAM
+        \end{itemize}
+        \item Sensors
+        \begin{itemize}
+            \item Accelerometer
+            \item Gyroscope
+            \item Magnetometer
+            \item Barometer
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+\subsection{BeagleBone Blue}
+The BeagleBone Blue is a Linux based microcontroller made by BeagleBoard. This board was purpose built for robotic applications. Compared to the PixHawk, the BBB is a bargain coming in at \$78 \cite{BeagleBoneBluePrice}. Although the BBB is more barebones in aesthetics compared the PixHawk, it makes up for it in cost savings and added features.
+\begin{itemize}
+    \item Technical Specs \cite{BeagleBoneBlueSpecs}
+    \begin{itemize}
+        \item OS
+        \begin{itemize}
+            \item Linux
+        \end{itemize}
+        \item Main Processor
+        \begin{itemize}
+            \item ARM Processor, 1GHz, 512MB RAM
+            \item 4GB eMMC storage
+        \end{itemize}
+        \item Sensors
+        \begin{itemize}
+            \item Accelerometer
+            \item Gyroscope
+            \item Magnetometer
+            \item Barometer
+        \end{itemize}
+        \item Interfaces
+        \begin{itemize}
+            \item Wifi 802.11bgn
+            \item Bluetooth
+            \item USB
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+\subsection{Intel Aero Compute Board}
+Intel of all companies has put out their own purpose-built UAV flight control board. Of course, when it comes to Intel, you can expect high performance and high cost. The Intel Aero costs \$399 \cite{IntelAero}. The Intel Aero has the computing power to back its high cost, however. If you need to be running extra calculations while keeping your drone in the air and have money to boot, this may be a great option. Although, it lacks onboard connections for motors and servos, it does include an expansion board. 
+\begin{itemize}
+    \item Technical Specs \cite{IntelAero}
+    \begin{itemize}
+        \item OS
+        \begin{itemize}
+            \item Linux
+        \end{itemize}
+        \item Main Processor
+        \begin{itemize}
+            \item Intel Atom 2.56 GHz Max, quad core, 2M cache, 64-bit
+            \item 4GB LPDDR3 RAM, 32 GB eMMC Storage
+        \end{itemize}
+        \item Sensors
+        \begin{itemize}
+            \item Accelerometer
+            \item Gyroscope
+            \item Magnetometer
+            \item Barometer
+        \end{itemize}
+        \item Interfaces
+        \begin{itemize}
+            \item Dual band Wifi 802.11ac
+            \item USB 3.0
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+\subsection{Conclusion}
+This is a toss up between the BeagleBone Blue and the latest version of the PixHawk. The BeagleBone Blue comes standard with wireless connectivity and higher processing power than the PixHawk, but has less documentation for use in drone applications. The PixHawk was built for being a flight controller in drones, so it is not a wrong choice, however, the BeagleBone seems more appealing.
+
+\section{Data Visualization Software}
+The main purpose of this project is to use a drone to locate radio tagged animals. Once the drone hones in on a frequency from a few different points, we should have enough data to triangulate the approximate location of the source. The drone will either transmit the locational data back to the ground control station, or the drone will physically return to the researcher and then the data will be exported. Either way, once the data is obtained it will need to be processed and overlaid on a map of the area. This will give the field research team a smaller area of where to look for the animal they are trying to track.
+
+\begin{itemize}
+    \item The first option for data visualization would be to utilize one of the software systems already in use by field researchers. The two most used radio telemetry data visualization software are Locate III and LOAS. 
+    \begin{itemize}
+        \item Locate III was initially developed in 1987, but it was last updated in 2011. Needless to say, it is an outdated software, but it is free to use. The program itself is very bare-bones and has poor user interaction. It does not say it runs on Windows 10, just “Windows PC, and Palm \& Windows Mobile PDAs” \cite{LocateIII}.
+        \item LOAS is not much newer than Locate III, given it runs on Windows NT. However, LOAS at least states it runs on Windows 10 \cite{LOAS}. The overall UI is only a slight step up from Locate III, but still gives off the bare-bones Windows XP feel.
+    \end{itemize}
+    \item Google Earth is a great free mapping tool that many people probably don’t think of at first. Google has developed many APIs for Earth that allow you to import your own data and to make custom maps overlaying the satellite imagery displayed in Google Earth. Not only is it easy to customize, Google Earth runs on many operating systems including Windows, macOS, Linux, Android, and iOS \cite{GoogleEarth}. You can even map straight from a Google Spreadsheet \cite{GoogleEarthMappingSpreadsheet}.
+    \item ArcGIS is an immense GIS desktop application made by esri. The ArcGIS family of applications, which also includes a web based ArcOnline, is the go-to for many geographers. It covers many aspects of GIS and mapping, but the main ones we are after visualization and data collection it covers very well. the ArcGIS platform is also extremely developer friendly with many APIs for building mobile and web apps across most device platforms \cite{ArcGIS}.
+\end{itemize}
+\subsection{Conclusion}
+The software currently in use is not user friendly and very outdated. These software may be useful as a starting point for a new application, but will not be used themselves. ArcGIS has the most prebuilt mapping and data visualization functions available from day one, but it comes with a subscription cost to use. That leaves Google Earth as the best choice to visually represent the data that is collected.
+\bibliographystyle{IEEEtran}
+\bibliography{bib.bib}
+\end{document}
