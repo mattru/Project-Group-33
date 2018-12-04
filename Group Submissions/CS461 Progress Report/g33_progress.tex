@@ -1,0 +1,142 @@
+\documentclass[onecolumn, draftclsnofoot,10pt, compsoc]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{setspace}
+
+\usepackage{geometry}
+\geometry{textheight=9.5in, textwidth=7in}
+
+% 1. Fill in these details
+\def \CapstoneTeamName{		TaalSquad}
+\def \CapstoneTeamNumber{		33}
+\def \GroupMemberOne{			Pavel Shonka}
+\def \GroupMemberTwo{			Aidan Carson}
+\def \GroupMemberThree{			Matthew Ruder}
+\def \GroupMemberFour{			Camden Sladcik}
+\def \GroupMemberFive{			Jonathan Buntin}
+\def \GroupMemberSix{			Manuel Lara-Navarro}
+\def \CapstoneProjectName{		Tracking radiotagged animals with automated drones and VHF antennas}
+\def \CapstoneSponsorCompany{	Levi Lab, Department of Fisheries and Wildlife, Oregon State University}
+\def \CapstoneSponsorPerson{		Taal Levi}
+
+% 2. Uncomment the appropriate line below so that the document type works
+\def \DocType{		Progress Report
+				%Requirements Document
+				%Technology Review
+				%Design Document
+				%Progress Report
+				}
+			
+\newcommand{\NameSigPair}[1]{\par
+\makebox[2.75in][r]{#1} \hfil 	\makebox[3.25in]{\makebox[2.25in]{\hrulefill} \hfill		\makebox[.75in]{\hrulefill}}
+\par\vspace{-12pt} \textit{\tiny\noindent
+\makebox[2.75in]{} \hfil		\makebox[3.25in]{\makebox[2.25in][r]{Signature} \hfill	\makebox[.75in][r]{Date}}}}
+% 3. If the document is not to be signed, uncomment the RENEWcommand below
+%\renewcommand{\NameSigPair}[1]{#1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\begin{titlepage}
+    \pagenumbering{gobble}
+    \begin{singlespace}
+    	\includegraphics[height=4cm]{coe_v_spot1}
+        \hfill 
+        % 4. If you have a logo, use this includegraphics command to put it on the coversheet.
+        %\includegraphics[height=4cm]{CompanyLogo}   
+        \par\vspace{.2in}
+        \centering
+        \scshape{
+            \huge CS Capstone \DocType \par
+            {\large\today}\par
+            \vspace{.5in}
+            \textbf{\Huge\CapstoneProjectName}\par
+            \vfill
+            {\large Prepared for}\par
+            \Huge \CapstoneSponsorCompany\par
+            \vspace{5pt}
+            {\Large\NameSigPair{\CapstoneSponsorPerson}\par}
+            {\large Prepared by }\par
+            Group\CapstoneTeamNumber\par
+            % 5. comment out the line below this one if you do not wish to name your team
+            \CapstoneTeamName\par 
+            \vspace{5pt}
+            {\Large
+                \NameSigPair{\GroupMemberOne}\par
+                \NameSigPair{\GroupMemberTwo}\par
+                \NameSigPair{\GroupMemberThree}\par
+                \NameSigPair{\GroupMemberFour}\par
+                \NameSigPair{\GroupMemberFive}\par
+                \NameSigPair{\GroupMemberSix}\par
+            }
+            \vspace{20pt}
+        }
+        \begin{abstract}
+        % 6. Fill in your abstract    
+        	This document serves to define the core issue with current methods of animal tracking. The goal of this project is to reduce the cost of tracking animals in the forest while obtaining reliable data. To address this issue, drones were declared a viable option if mounted with VHF antennas. With proper design and programming, the drones would be able to successfully locate tagged animals, essentially reducing the amount of time, cost, and effort put into current tracking methods. In essence, drones shall be utilized to automate the tracking of these animals. In addition, altitude, wind, area coverage, and expenses shall be taken into consideration when designing these drones.
+        \end{abstract}     
+    \end{singlespace}
+\end{titlepage}
+\newpage
+\pagenumbering{arabic}
+\tableofcontents
+% 7. uncomment this (if applicable). Consider adding a page break.
+%\listoffigures
+%\listoftables
+\clearpage
+
+% 8. now you write!
+\section{Project Purposes}
+%purpose of the project, background info
+Tracking large animals is straightforward within open environments. GPS tracking can allow for pinpoint measurements from anywhere in a forest. However, the mass of GPS transmitters along with the associated battery pack is too much for smaller animals, such as the Marbled Murrelet which the Department of Fisheries and Wildlife desperately wants to track. Current methods of tracking forest animals involve utilizing VHF radio technology. Selected animals are given radio tags that emit a unique radio frequency that is picked up by VHF antennas. However, VHF antennas require manual assistance in order to successfully track the animals. As such, the cost of tracking using VHF antennas is extremely expensive, laborious, and inefficient. The ultimate goal of the project is to reduce the cost of tracking forest animals while obtaining reliable data. In order to accomplish this, several steps must be taken to construct a proper solution. The main objective is finding a VHF signal. The device designed must be able to receive VHF signals within densely forested areas. If the device cannot accomplish this task then it does not solve the problem. Secondly, the device must be automated and capable of operating within a dense forest environment; as such, battery life must be taken into account. The constructed device must be able to last several hours in order to cover the largest area possible.
+\newline\newline 
+%recap goals of project
+Tracking animals within densely forested areas is costly within the Pacific Northwest. To fully automate the process of tracking animals, drones equipped with VHF antennas will enable wildlife researchers indicators as to where tagged animals are currently located. One of the proposed solutions involves designing a single drone equipped with a VHF antenna to patrol a designated route above the tree line. Researchers shall be able to assign a specific path for the drone with user friendly software. %The biggest issue using this method is the battery of the drone must last a long time and charge quickly, otherwise it would be ineffective at searching as it would be slower than searching by hand. To counteract this, fixed wing drones shall be used for increased flight speed along designated paths. With this style of flight, searching may return less accurate location information; therefore, the deployment of multiple drones may be implemented as to reduce flight path and increase the number of paths for greater accuracy. In addition, this would decrease the general flight time per drone and overall battery consumption. If autonomous drones followed specified search algorithms, then the location could be transmitted back to a central base camp, enabling researchers to locate animals in the shortest amount of time. As an additional feature, various sensor data on the drone, such as temperature, pressure, and humidity, can be recorded for each drone's area, essentially providing extra information of the regions of the forest.
+
+\section{Current Developments}
+The team is hoping to begin initial implementation over winter break. Fall term has been about designing a solution to the problem of locating animals over a large area. As a team, we've come up with a set of solutions that will come together to allow for effective surveying of a large area relative to current methods. The pieces that the we have decided to pursue are: a fixed wing drone, a UI component, and a data processing component. While each of these sections were thoroughly discussed in the tech review and design document, the first actionable item the team will be taking on is the drone itself.
+%drone
+\newline\newline
+The drone will be of the fixed wing plane type. The team has arrived at the conclusion that only a fixed wing drone will have the energy efficiency to travel the distances required to survey such a large region. The drone must follow flight paths that cross the designated area multiple times, which will add up to many miles. The team is currently working on getting a flight controller, PixHawk is the current choice, attached to a drone so that autonomous flight can be obtained. While fall term was mostly design and documentation, it has set the team up for success in the implementation phase that will begin after winter break.
+
+\section{Problems Encountered}
+%ece team receiver
+There are a few technical challenges to the TAAL project that will need to be addressed.
+The first challenge that will need to be overcome is with the VHF receiver. The TAAL project also contains an ECE aspect that must be interfaced with. The ECE team's sole project is to build a VHF receiver that will take in an analog signal coming from the several animals equipped with VHF transmitters and transfer it to a digital format. In speaking with Mr. McGrath, he recommends that the CS team not rely on the productions of the ECE team, and instead have a plan for if they cannot accomplish their goal. This was late in the term and will require the CS team to come up with a new plan and solution in regards to the VHF receiver.
+\newline\newline
+%battery and flight time
+Battery life is directly correlated with flight time, and as such, needs to be maximized in order to produce a product that surveys the desired area. The second technical challenge involves several factors in hardware from drone size to receiver weight. It has been hard to decide on the correct battery size to include in the drone due to these variables. Further experimentation with several drone bodies and respective flight times will be required before a determination on battery capacity and size can be made.
+\newline\newline
+%weight
+The last major challenge that the CS team has identified is the problem of weight. With each factor, including long range transmission, data collection, telemetry, etc., there is a weight cost associated with it. It has been difficult to decide on the correct drone size that will be needed because of such a variable payload the drone will need to carry. Minimizing the payload size will  minimize the needed drone size as well as overall cost.
+
+\section{Retrospective}
+    %\centering
+    \begin{tabular}{|p{0.1\linewidth}|p{0.3\linewidth}|p{0.3\linewidth}|p{0.3\linewidth}|}
+    \hline
+        Week \# & Positives & Deltas & Actions \\
+        \hline
+        One & Term Started & No projects assigned & Review projects for selection \\
+        \hline
+        Two & Selected Project & Project selection & Select project \\
+        \hline
+        Three & Assigned to Team & Problem Statement & Meet with client  \\
+        \hline
+        Four & Productive first meeting with client & Uncertain project specifications and division of labor between teams & Meet again with client and ECE team \\
+        \hline
+        Five & Second Meeting with Client\newline ECE Team got transmitters & Requirements Doc due next week & Meet to work on Requirements Doc \\
+        \hline
+        Six & Got Req Doc done & Tech Review first draft due & Research and improve Tech Reviews \\
+        \hline
+        Seven & Third Meeting with Client\newline ECE team gets receiver & Tech Review Final due this week & Improved tech list for final tech review \\
+        \hline
+        Eight &  & Too much to do & \\
+        \hline
+        Nine & Holiday week & Meet to work on design doc & Those available met to work on design doc \\
+        \hline
+        Ten & Finished design doc & End of term progress updates & Met with client to get verification and worked on end of term progress updates. \\
+        \hline
+    \end{tabular}
+    %\caption{Caption}
+    %\label{tab:my_label}
+
+\end{document}
