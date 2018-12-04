@@ -1,0 +1,56 @@
+\documentclass[10pt, draftclsnofoot, onecolumn] {IEEEtran}
+\usepackage{setspace}
+\usepackage[margin=.75in]{geometry}
+
+\singlespacing
+\begin{document}
+
+\title{\textbf{Problem Statement}{ \\ 
+                \large Project 33: Tracking radio-tagged carnivores
+                in the forest with automated drones
+                and VHF antennas}}
+
+\author{Camden Sladcik}
+
+%--------------------Title Page
+
+\begin{titlepage}
+    \maketitle
+    
+    \begin{center}
+        
+        CS 461 Fall Term \\
+        October 11, 2018
+        
+    \end{center}
+    \begin{abstract}
+     	The project of creating a drone that can track VHF(very high frequency) radio tagged animals in their habitats is our goal. Tracking animals in the wild normally takes hours of hiking, and you may not even find a tagged animal. We strive to eliminate lengthy hikes by locating the animals from the sky with an aerial drone. The drone will pick up the signal, triangulate the location of the animal, then rely the data back to field workers. The workers can then go straight to where the animal is, rather than hiking aimlessly hoping they find a signal. 
+    \end{abstract}  
+    \end{titlepage}
+
+
+\section{Problem}
+    Studying wild animals has probably been a field of research for as long as humans have been conducting research. 
+    Some animals are easier to track in the wild than other. Some live in easily accessible habitats, some aren't as shy as others, and some are large enough to be equipped with their own global positioning system and transmitter. These animals make it easy for field researchers to locate and study them. However, we are here to look for those animals that are harder to locate or harder to reach physically.
+
+    The sneaky critters we are going to be after are either too small to be fitted with a GPS device, or they live in a habitat that is too poor for GPS units. Although, these animals have an alternative to GPS tracking, VHF tracking.
+    VHF stands for very high frequency. Attached to the animals is a small VHF transmitter (imagine a home arrest ankle bracelet but for weasels or owls). VHF is primarily a line of sight frequency. That is, to track VHF equipped animals you need to be out in the field, on foot, and be equipped with a VHF antenna and receiver. Now, this isn't difficult just because it can take a lot of hours walking around to accomplish. Just throw in some difficult terrain, a little inclement weather, the fact that some animals are only active at night, or all of those at once! You'll be wishing for a better solution. 
+
+
+\section{Solution}
+    A better solution is exactly what we hope to have! Our goal is to throw out the game of pin the tail on the transmitter, eliminating the need for a field worker to spend time narrowing down the animal's location. The plan is to employ the use of aerial reconnaissance. We're talking about drones! Drones have become increasingly popular these days. Some of the recent draw to drones is the recreational aspect, along with most models being easily obtainable for the common person. But our drone isn't for fun. This drone will be tasked with flying around habitats searching for VHF equipped wildlife. With VHF antenna and receiver attached, the drone will fly around a given habitat searching for a signal. Once a signal is located, the drone will triangulate the position of the transmitting animal, and take note of its location. Once the drone returns, or transmits the collected data to the researchers, they can go straight to where the animal was last. No need to aimlessly hike searching for a signal. 
+    
+    Drones are not only hardware, there is a lot of programming that goes into them too. We will have to program the drone system to interpret a signal once it is found. Once it has found a VHF signal, we will need to have the drone triangulate where the signal is coming from. Other than actually tracking a VHF signal, our drone will need to avoid obstacles like trees, rocks, and bushes. It will need to be able to account for elevation gains and adjust its height so it maintains proper flying altitude. Also, the drone will need to keep track of its own location and store that location in memory once it has found the location of the tracked animal.
+    
+    Cutting down on time out hiking, and more time studying will allow for better research to be conducted. It will also allow less tired field workers!
+
+
+\section{Criteria}
+    We will be designing and programming a system that when attached to a drone, allows for the tracking of radio tagged animals in the wild. To meet our goal, we will have to produce a working system. Not only do we want a functional system, we want it to be accurate! Accuracy will be key to this project. Once we dial in the drone to home in on a transmitting animal accurately, we will be most of the way there.
+    
+    Other than tracking accuracy, our drone will need to be able to cover a specific amount of area and still have battery life to return to base. The estimated required coverage area the drone needs to fly is 100 square kilometers of habitat. This will involve things mentioned above like obstacle avoidance, maintaining altitude, and correctly collecting location data.
+    
+    Once it is all said and done, we will have an animal tracking aerial vehicle that will crush the amount of time it takes to track an animal, and relay accurate location data back to field workers so that they can go straight to the animal.
+
+
+\end{document}

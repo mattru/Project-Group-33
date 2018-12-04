@@ -1,0 +1,46 @@
+\documentclass{article}
+\usepackage[left=.75in, right=.75in]{geometry}
+\usepackage{titling}
+\usepackage{blindtext}
+% Include name, class, title, term, abstract (at minimum)
+\title{Problem Statement\\[1em]
+        \large Senior Capstone\\
+        \large Fall 2018}
+\author{Aidan Carson}
+\begin{document}
+\begin{titlingpage}
+    \maketitle
+    \begin{abstract}
+        This project involves a partnership between a group of six Senior Capstone students and the Department of Fisheries and Wildlife. Taal Levi is the client for the project, and he has tasked the group with a solution to the problem of small animal tracking within the forests near Oregon State University. This project involves the research, construction, and programming of remotely controlled, preprogrammed, and/or partially autonomous drones to triangulate these small animals' position when equipped with VHF transmitters. The project was created because of the manual nature of the process currently being used by the department to track these small animals. It involves a person carrying a large transmitter to hike within the forests and record periodically both their GPS location and direction of the strongest signal. This is done periodically every mile or more in order to triangulate the position of the animal. This is a very inefficient, intensive, expensive, and inaccurate method of tracking that could be effectively replaced mostly or entirely through the use of drones.
+    \end{abstract}
+\end{titlingpage}
+%Definition and description of the problem you are trying to solve written for a general, but educated audience
+
+\section{Definition}
+Currently, the Department of Fisheries and Wildlife uses a very manual process to track and record data about small carnivores in the forests around Oregon State University. Because of the small size of the animals they desire to track, they require a device that has a significantly smaller footprint on the animal than the GPS devices they are able to use on larger animals. This smaller footprint device comes in the form of a VHF transmitter.
+
+In order for these VHF transmitters to be used to record data about the animal, they must first be triangulated through the use of large antennas. Currently, the only method for triangulation is the process of people physically hiking throughout the forests and recording both their GPS location and the direction of strongest signal. This indicates the direction of the closest animal equipped with a VHF transmitter. Then the person must continue hiking for miles, periodically recording their GPS location and direction of strongest signal. Eventually, enough data points are gathered that can be reconstructed at a later point to determine the location of the animal. This is a very manual solution that has the potential to be made much less physically intensive and expensive.
+
+%Proposed solution
+\section{Solution}
+The proposed solution to the indicated problem is to use a drone equipped with a similar antennae to that of the hiker and record metrics in that way. By doing this, there begins an opportunity to speed up the process of data gathering and reduce the need for human interaction.
+
+There are multiple possible solutions to this problem, and almost limitless possibilities for how far the project can go. To begin, the drone will need to be large enough and contain enough power to both carry an antennae to receive the signals from the VHF transmitter as well as power the transmitter, drone, and any equipment needed to receive, record, and/or transmit that data back to a central server or hub. This solution also requires a pilot to control the drone over the desired area and potentially indicate when the drone should record data.
+
+Ideally, the solution would go beyond this idea to reduce the amount of user interaction needed. The drone can potentially be coded with preprogrammed routes that it can fly without the need for any user interaction. Additionally, the team may feel that the best route would be to give a UI that allows for pilots to enter in their own preprogrammed routes in a particular area. The problem then becomes how the drone can stay above the trees by itself. This could be solved either through the use of computer vision and autonomy, and/or the use of GPS data for the location to indicate how high it needs to fly above the trees.
+
+Beyond this initial idea comes the option of additional automation possibilities. These include the drone's ability to cover an indicated area automatically, recording data as it goes and perhaps even keeping track of its battery levels so that it can come back to a starting point or potentially a hub located in the forest for recharging. With the decrease of user interaction comes the possibility for continuous data retrieval and therefore more accurate transcriptions of animal habitat as well as even movement patterns over a given period of time.
+
+%Performance metrics: Tell how you will know when you have completed the project. Metrics help you and your client agree on what successful completion (e.g., % faster, $-amount cheaper, easier to use, "a working prototype," a complete white paper with research results) of the project looks like.
+
+\section{performance}
+The proposed completion of the project is when a working drone is delivered with capability of recording GPS coordinates and direction of strongest signal relative to itself. The project will have been indicated a success when there is a reduction in physical involvement needed for animal triangulation and/or a reduction in the monetary needs involved with the project. If money spent on manpower can be offset by a more reliable system that pays for itself over time then the project will have been indicated a success. Metrics for scoring a project are as follows:
+\begin{itemize}
+    \item physical manpower required
+    \item total monetary spend over time
+    \item quality of data captured (affected by data retrieval frequency, interval between sessions, etc.)
+    \item reliability of system
+\end{itemize}
+
+If the solution can be used as a replacement to the current manual process because of a significant increase in one or more of these categories then the project will be considered a success. The system ideally should also be able to handle large areas of forest. This could as a baseline involved manually driving the drone to different parts of the forest, but if a long range drone or recharging stations could be built that allows for long range data retrieval, the manpower required for the project would be significantly reduced.
+\end{document}
