@@ -1,0 +1,143 @@
+\documentclass[onecolumn, draftclsnofoot,10pt, compsoc]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{setspace}
+\usepackage{cite}
+
+\usepackage{geometry}
+\geometry{textheight=9.5in, textwidth=7in}
+
+\title{Tracking radio-tagged carnivores in the forest with automated drones and VHF antennas}
+\author{Manuel Lara-Navarro}
+\date{November 2018}
+
+\begin{document}
+
+\maketitle
+\newpage
+
+
+\section{Back-End: the technology implementing back end software}
+
+    \subsection{PHP}
+    An open source object-oriented language. Used by websites like facebook, wordpress, and flicker. Very similar to Python in regards to not needing compiling. Because of the similarity with
+    python it can be a hard language to read if structure of code is not strict, known as “Spaghetti Code.” Very popular language because of vast community of developers, libraries, and
+    frameworks. 80\% of modern websites use PHP today  \cite{ProgrammingLanguages}. Unlike Python and Java, PHP is really only suited for web-development purposes.
+
+    \subsection{Python}
+    An open source high-level aspect-oriented programming language. Very popular language among scientists. Python’s Django framework is used in popular apps Instagram, Pinterest, and
+    EventBrite. Python was not intended to be used in web development. Less than 5\% of websites today use python \cite{ProgrammingLanguages}. Python is also considered a language that is easy to learn compared to
+    languages like C++, Perl, and others. Python’s library support really makes it popular among all levels of programmers. Because of its well developed support python is used for almost all
+    types of applications.
+
+    \subsection{Java}
+    An Object-oriented high-level class-based language programming language. Considered the most difficult to language to learn out of the three. The intricate syntax of Java compared to Python and PHP really separates it from the two. Java is also the only language out of the three that requires compiling. Java is clearly the most sophisticated language of the three. Java is referred to as a “write once and run everywhere” language being more universal and independent than Python and PHP. Java is the native language for the Android programming platform and must be considered when choosing platform implementation.
+    \newline
+
+    Because all of these languages have so much to offer, they would all be a great choice. The determining factor in choosing one over the other will depend on our platform.
+
+
+\section{Hosting: the database technology used}
+
+    \subsection{MySQL}
+    Currently the most popular database for web-based applications. MySQL is a full feature
+    open-source relational database management system owned by Oracle Corporation.
+    Compatible with just about every Operating System. Used by Youtube, Facebook, Twitter
+    and many other popular websites. MySQL has an abundance of resources and documentation
+    to support it. It is extremely easy to learn how to use MySQL. Uses Structured Query
+    Language to store and update data. Key terms used to manage the data are ‘SELECT’,
+    ‘UPDATE’, ‘INSERT’, and ‘DELETE’. Structured by storing data into tables grouped into
+    databases. MySQL has a ‘Strict’ schema with vertical scaling. MySQL can be best used
+    for frequent updates and modifications of large volume of records, relatively small
+    datasets, and data structure fits for tables and rows. Includes key features like
+    Triggers, subSELECTs, and integrated replication support. Because of MySQL’s
+    popularity, its ease of use, and its great support documentation it is a reliable
+    option for database implementation.
+
+    \subsection{MongoDB}
+    A popular open-source document-oriented non-relational database. In MongoDB documents
+    are created and stored in BSON files, Binary Javascript Object Notation format. Using
+    JSON makes it easier to transfer data between servers and web apps and because of this
+    MongoDB is the better option for storage capacity and speed due its greater efficiency
+    and reliability. Unlike MySQL’s use of a ‘Strict’ schema, MongoDB uses a ‘Dynamic’
+    schema eliminating the requirement for predefined structures of data. Dynamic schemas
+    make MondoDB a much more flexible Database system than MySQL and very popular among
+    businesses with rapid growth. MongoDB uses horizontal scaling which helps reduce the
+    workload. Because of the structure of MongoDB, it can perform simple queries with
+    high-performance compared to MySQL.
+
+    \subsection{MariaDB}
+    MariaDB is a relational database management system forked from MySQL by the original
+    developers of MySQL with a stronger focus on being open-source. This system is
+    compatible with just about every Operating System available. After MySQL was sold to
+    Oracle, the community of open-source developers felt it was no longer open to the
+    community enough for development and input. This led to the development of MariaDB.
+    Today many large corporations and Linux distributions are using MariaDb like Google,
+    Craigslist, and RedHat. MariaDB is still based off of MySQL and they have many
+    similarities. The database structure and indexes are the same in the two. Having
+    similar layout of data makes migration from MySQL to MariaDB a very easy task not
+    requiring any modifications to data structure. MariaDB uses the same key terms as MySQL
+    to store and update data, ‘SELECT’, ‘UPDATE’, and ‘INSERT’. MariaDB tends to be ahead
+    of MySQL in terms of update releases and feature additions. It can be expected of
+    MariaDB to be ahead in terms of features due to it being open-source and developed by
+    the community. This can’t be said about MySQL due to it being maintained only by Oracle
+    where they have a slower rate of updating and adding features. Currently MariaDB has
+    higher performance rating than MySQL and is more open to the public.
+
+\section{Power Source: the main source of power of the device}
+
+    \subsection{Batteries}
+    The simplest method would be to use removable batteries. Using batteries over fuel
+    would eliminate the worry of spilling fuel on expensive material, having to depend on
+    fuel, and hauling fuel around. Using batteries as the main source of power would also
+    be the best way to recharge or refill the power source, because it could simply be
+    swapped out for a secondary unit while the empty battery gets plugged in to recharge.
+    Swapping and recharging batteries should be quicker than refilling fuel. The type of
+    batteries used in drones today are Lithium material. One of the issues with lithium
+    batteries is its tendency to burst into flames due to containing flammable liquid.
+    Lithium batteries are the best option in terms of cycle life and capacity. New lithium
+    battery technologies are constantly being developed. Current flight time with these
+    batteries is about 20 to 30 minutes with quadcopters. New lithium batteries are
+    expected to be released this year with double the flight time or half the size of
+    current possibilities \cite{LiBatteries}. Using batteries for our drone will be the best realistic
+    option and most affordable.
+
+    \subsection{Hydrogen Fuel Cells}
+    A pollution free form of power. The Conversion of hydrogen to electricity which leaves
+    behind nothing but water and some heat. The advantages of hydrogen fuel cells are
+    clearly environmentally friendly, but also much longer flight time and lifetime than
+    traditional batteries. A disadvantage is however the cost. The upfront cost of
+    hydrogen fuel cells is roughly 7 times that of current lithium batteries used in
+    drones \cite{HydrogenFuelCells}. This is primarily due to the technology being a fairly unexplored one not yet
+    mainstream especially in drone use. Another disadvantage is the need to find hydrogen
+    fuel, obviously unlike batteries, hydrogen can’t be shipped. Eventually hydrogen fuel
+    cells will be the main power source in the majority of drones, hopefully sooner than
+    later.
+
+    \subsection{Solar power}
+    With the predicted use of solar panels expected to explode in the next few years, new technologies and solar cells are
+    being developed. In the past, solar panels were bulky, stiff, and quite heavy. They were definitely not intended to
+    be mounted on drones or really anything mobile. Today we can find smaller solar panels and even flexible ones that can
+    easily be adjusted for fit. Currently there are many solar powered drones that can stay airborne for a much longer period of
+    time than traditional battery powered drones \cite{SolarPower}. Today, a typical solar powered drone is not intended for long range flight or any
+    payload. Solar power currently does not provide enough power delivery to fly for long distances in conditions such as those
+    required by our drone where we need to carry a bit of weight to perform our readings. In the near future solar power will
+    be a dependent main source of power for drones but today it would be more realistic as a source of backup power.
+
+
+\section{Conclusion}
+
+    After spending time researching these technologies we can compare how they can be used in this project.
+    The Back-End could be implemented using any of the technologies discussed. All three are great options,
+    in the end the choice will come down to what exactly the platform used in this project requires and how it
+    must be designed. The hosting and database technology will work either of the pieces discussed, but the best
+    choice would be the the traditional MySQL due to its popularity and support. The choice for power source will
+    be the only one that is a realistic option today. Batteries are the safest and most reliable option for this
+    project.
+
+\newpage
+\bibliography{bib}
+\bibliographystyle{IEEEtran}
+
+
+\end{document}
