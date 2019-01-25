@@ -1,0 +1,17 @@
+{
+  "name": "taal-app",
+  "version": "1.0.0",
+  "description": "TAAL flight programming and data visualization tool",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/mattru/Project-Group-33",
+  "keywords": [
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^4.0.1"
+  }
+}
