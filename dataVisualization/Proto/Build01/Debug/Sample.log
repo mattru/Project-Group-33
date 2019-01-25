@@ -1,0 +1,8 @@
+﻿  sample.cpp
+c:\users\matthew\documents\cs462\mapinfo\proto\build01\sample.cpp(122): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\matthew\documents\cs462\mapinfo\proto\build01\sample.cpp(637): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\matthew\documents\cs462\mapinfo\proto\build01\sample.cpp(684): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\matthew\documents\cs462\mapinfo\proto\build01\sample.cpp(686): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\matthew\documents\cs462\mapinfo\proto\build01\sample.cpp(716): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+sample.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+  Sample.vcxproj -> C:\Users\Matthew\Documents\CS462\MapInfo\Proto\Build01\.\Debug\Sample.exe
