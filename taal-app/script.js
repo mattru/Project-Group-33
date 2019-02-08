@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var map;
 var drawingManager;
 var selectedShape = null;
@@ -38,12 +40,87 @@ document.getElementById("circle-button").addEventListener("click", function() {
 
 document.getElementById("generate-flight").addEventListener("click", function () {
     if (prevShape) {
-        let bounds = selectedShape.getBounds().getNorthEast();
+        let northWest = {
+            lat: prevShape.getBounds().getNorthEast().lat(),
+            lng: prevShape.getBounds().getSouthWest().lng() 
+        };
+        let southEast = {
+            lat: prevShape.getBounds().getSouthWest().lat(),
+            lng: prevShape.getBounds().getNorthEast().lng()
+        };
 
-        new google.maps.Marker({position:bounds, map:map});
-        new google.maps.Marker({position:selectedShape.getBounds().getSouthWest(), map:map})
+        new google.maps.Marker({position:northWest, map:map});
+        new google.maps.Marker({position:southEast, map:map})
 
-        console.log(bounds);
+        console.log("North West Lat: " + northWest.lat);
+        console.log("North West Long: " + northWest.lng);
+
+        console.log("South East Lat: " + southEast.lat);
+        console.log("South East Long: " + southEast.lng);
+
+        var right = true;
+        var prevCoord = null;
+
+        var diff = calcIterAmount(northWest, southEast); 
+        if (diff == null) {
+            alert("Survey area is too small! Please select a larger area.");
+            return;
+        }
+
+        var lineSymbol = {
+          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+        };
+
+        for (var i = northWest.lat - (diff / 2); i > southEast.lat; i -= diff) {
+            console.log(i);
+            if (right) {
+                for (var j = northWest.lng + (diff / 2); j < southEast.lng; j += diff) {
+                    if (prevCoord) {
+                        var line = new google.maps.Polyline({
+                        path: [prevCoord, {lat: i, lng: j}],
+                        icons: [{
+                            icon: lineSymbol,
+                            offset: '100%'
+                        }],
+                        map: map
+                        });
+                    }
+                    console.log(j);
+                    prevCoord = {lat: i, lng: j};
+                    // new google.maps.Marker({position: prevCoord, map:map})
+                }
+            }
+            else {
+                for (var j = southEast.lng - (diff / 2); j > northWest.lng; j -= diff) {
+                    if (prevCoord) {
+                        var line = new google.maps.Polyline({
+                        path: [prevCoord, {lat: i, lng: j}],
+                        icons: [{
+                            icon: lineSymbol,
+                            offset: '100%'
+                        }],
+                        map: map
+                        });
+                    }
+                    console.log(j);
+                    prevCoord = {lat: i, lng: j};
+                    // new google.maps.Marker({position: prevCoord, map:map})
+                }
+            }
+
+            right = !right;
+        }
+    }
+
+    
+
+
+
+    try {
+        fs.writeFileSync('flight_planner.txt', "Hello World\n", 'utf-8'); 
+    }
+    catch(e) {
+        alert('Failed to save the file !');
     }
     
 });
@@ -115,6 +192,21 @@ function clearPrev() {
     if (prevShape) {
         prevShape.setMap(null);
     }
+}
+
+function calcIterAmount(northWest, southEast) {
+    var latDiff = Math.abs(northWest.lat - southEast.lat)
+    var lngDiff = Math.abs(northWest.lng - southEast.lng)
+
+    var total = (latDiff > lngDiff) ? latDiff : lngDiff;
+
+    if (total < .0008 ||
+        latDiff < total / 10 ||
+        lngDiff < total / 10) {
+        return null;
+    }
+
+    return total / 10;
 }
 
 
