@@ -6,6 +6,8 @@ var selectedShape = null;
 var prevShape = null;
 var flightPathLines = [];
 
+const flightDiffAmount = .0008;
+
 document.getElementById("rectangle-button").addEventListener("click", function() {
 
     deletePrevShape();
@@ -135,7 +137,7 @@ function calcIterAmount(northWest, southEast) {
 
     var total = (latDiff > lngDiff) ? latDiff : lngDiff;
 
-    if (total < .0008 ||
+    if (total < flightDiffAmount ||
         latDiff < total / 10 ||
         lngDiff < total / 10) {
         return null;
@@ -168,9 +170,9 @@ function generateFlightPath() {
           path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
         };
 
-        for (var i = northWest.lat - (diff / 2); i > southEast.lat; i -= diff) {
+        for (var i = northWest.lat - flightDiffAmount; i > southEast.lat; i -= flightDiffAmount) {
             if (right) {
-                for (var j = northWest.lng + (diff / 2); j < southEast.lng; j += diff) {
+                for (var j = northWest.lng + flightDiffAmount; j < southEast.lng; j += flightDiffAmount) {
                     if (prevCoord) {
                         flightPathLines.push(new google.maps.Polyline({
                             path: [prevCoord, {lat: i, lng: j}],
@@ -186,7 +188,7 @@ function generateFlightPath() {
                 }
             }
             else {
-                for (var j = southEast.lng - (diff / 2); j > northWest.lng; j -= diff) {
+                for (var j = southEast.lng - flightDiffAmount; j > northWest.lng; j -= flightDiffAmount) {
                     if (prevCoord) {
                         flightPathLines.push(new google.maps.Polyline({
                             path: [prevCoord, {lat: i, lng: j}],
