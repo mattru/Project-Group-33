@@ -4,10 +4,11 @@ var map;
 var drawingManager;
 var selectedShape = null;
 var prevShape = null;
+var flightPathLines = [];
 
 document.getElementById("rectangle-button").addEventListener("click", function() {
 
-    clearPrev();
+    deletePrevShape();
 
     drawingManager.setOptions({
         drawingMode : google.maps.drawing.OverlayType.RECTANGLE,
@@ -24,7 +25,7 @@ document.getElementById("rectangle-button").addEventListener("click", function()
 
 document.getElementById("circle-button").addEventListener("click", function() {
 
-    clearPrev();
+    deletePrevShape();
 
     drawingManager.setOptions({
         drawingMode : google.maps.drawing.OverlayType.CIRCLE,
@@ -38,92 +39,7 @@ document.getElementById("circle-button").addEventListener("click", function() {
     drawingManager.setMap(map);
 });
 
-document.getElementById("generate-flight").addEventListener("click", function () {
-    if (prevShape) {
-        let northWest = {
-            lat: prevShape.getBounds().getNorthEast().lat(),
-            lng: prevShape.getBounds().getSouthWest().lng() 
-        };
-        let southEast = {
-            lat: prevShape.getBounds().getSouthWest().lat(),
-            lng: prevShape.getBounds().getNorthEast().lng()
-        };
-
-        new google.maps.Marker({position:northWest, map:map});
-        new google.maps.Marker({position:southEast, map:map})
-
-        console.log("North West Lat: " + northWest.lat);
-        console.log("North West Long: " + northWest.lng);
-
-        console.log("South East Lat: " + southEast.lat);
-        console.log("South East Long: " + southEast.lng);
-
-        var right = true;
-        var prevCoord = null;
-
-        var diff = calcIterAmount(northWest, southEast); 
-        if (diff == null) {
-            alert("Survey area is too small! Please select a larger area.");
-            return;
-        }
-
-        var lineSymbol = {
-          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
-        };
-
-        for (var i = northWest.lat - (diff / 2); i > southEast.lat; i -= diff) {
-            console.log(i);
-            if (right) {
-                for (var j = northWest.lng + (diff / 2); j < southEast.lng; j += diff) {
-                    if (prevCoord) {
-                        var line = new google.maps.Polyline({
-                        path: [prevCoord, {lat: i, lng: j}],
-                        icons: [{
-                            icon: lineSymbol,
-                            offset: '100%'
-                        }],
-                        map: map
-                        });
-                    }
-                    console.log(j);
-                    prevCoord = {lat: i, lng: j};
-                    // new google.maps.Marker({position: prevCoord, map:map})
-                }
-            }
-            else {
-                for (var j = southEast.lng - (diff / 2); j > northWest.lng; j -= diff) {
-                    if (prevCoord) {
-                        var line = new google.maps.Polyline({
-                        path: [prevCoord, {lat: i, lng: j}],
-                        icons: [{
-                            icon: lineSymbol,
-                            offset: '100%'
-                        }],
-                        map: map
-                        });
-                    }
-                    console.log(j);
-                    prevCoord = {lat: i, lng: j};
-                    // new google.maps.Marker({position: prevCoord, map:map})
-                }
-            }
-
-            right = !right;
-        }
-    }
-
-    
-
-
-
-    try {
-        fs.writeFileSync('flight_planner.txt', "Hello World\n", 'utf-8'); 
-    }
-    catch(e) {
-        alert('Failed to save the file !');
-    }
-    
-});
+// document.getElementById("generate-flight").addEventListener("click", generateFlightPath);
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
@@ -156,6 +72,7 @@ function initMap() {
 };
 
 function completePolygon(event) {
+    console.log("polygon complete");
     let newShape = event.overlay;
 
     drawingManager.setDrawingMode(null);
@@ -166,10 +83,17 @@ function completePolygon(event) {
     google.maps.event.addListener(newShape, 'click', function() {
         setSelection(newShape);
     });
+    google.maps.event.addListener(newShape, 'dragend', dragComplete);
 
     selectedShape = newShape;
     prevShape = newShape;
+    generateFlightPath();
 };
+
+function dragComplete(event) {
+    deleteFlightPath();
+    generateFlightPath();
+}
 
 function setSelection(newShape) {
     console.log("Set Selection");
@@ -185,13 +109,24 @@ function clearSelection() {
         selectedShape.setDraggable(false);
         selectedShape = null;
     }
-
 }
 
-function clearPrev() {
+function deletePrevShape() {
     if (prevShape) {
         prevShape.setMap(null);
+        if (flightPathLines.length > 0) {
+            deleteFlightPath();
+        }
     }
+}
+
+function deleteFlightPath() {
+    var line;
+    for (;flightPathLines.length;) {
+        var line = flightPathLines.pop();
+        line.setMap(null);
+    }
+    flightPathLines = [];
 }
 
 function calcIterAmount(northWest, southEast) {
@@ -209,4 +144,74 @@ function calcIterAmount(northWest, southEast) {
     return total / 10;
 }
 
+function generateFlightPath() {
+    if (prevShape) {
+        let northWest = {
+            lat: prevShape.getBounds().getNorthEast().lat(),
+            lng: prevShape.getBounds().getSouthWest().lng() 
+        };
+        let southEast = {
+            lat: prevShape.getBounds().getSouthWest().lat(),
+            lng: prevShape.getBounds().getNorthEast().lng()
+        };
 
+        var right = true;
+        var prevCoord = null;
+
+        var diff = calcIterAmount(northWest, southEast); 
+        if (diff == null) {
+            alert("Survey area is too small! Please select a larger area.");
+            return;
+        }
+
+        var lineSymbol = {
+          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+        };
+
+        for (var i = northWest.lat - (diff / 2); i > southEast.lat; i -= diff) {
+            if (right) {
+                for (var j = northWest.lng + (diff / 2); j < southEast.lng; j += diff) {
+                    if (prevCoord) {
+                        flightPathLines.push(new google.maps.Polyline({
+                            path: [prevCoord, {lat: i, lng: j}],
+                            icons: [{
+                                icon: lineSymbol,
+                                offset: '100%'
+                            }],
+                            map: map,
+                            editable: false
+                        }));
+                    }
+                    prevCoord = {lat: i, lng: j};
+                }
+            }
+            else {
+                for (var j = southEast.lng - (diff / 2); j > northWest.lng; j -= diff) {
+                    if (prevCoord) {
+                        flightPathLines.push(new google.maps.Polyline({
+                            path: [prevCoord, {lat: i, lng: j}],
+                            icons: [{
+                                icon: lineSymbol,
+                                offset: '100%'
+                            }],
+                            map: map,
+                            editable: false
+                        }));
+                    }
+                    prevCoord = {lat: i, lng: j};
+                }
+            }
+
+            right = !right;
+        }
+    }
+
+    pathGenerated = true;
+
+    try {
+        fs.writeFileSync('flight_planner.txt', "Hello World\n", 'utf-8'); 
+    }
+    catch(e) {
+        alert('Failed to save the file !');
+    }
+}

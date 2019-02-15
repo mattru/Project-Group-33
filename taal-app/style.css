@@ -56,11 +56,12 @@ img {
 .main-sidebar {
     position: absolute;
     bottom: 0px;
-    margin-bottom: 10%;
+    margin-bottom: 15px;
 }
 
-#generate-flight {
+#download-flight {
     text-align: center;
+    width: 80%;
 }
 
 .main {
