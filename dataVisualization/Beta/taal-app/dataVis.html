@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <div class="sidebar">
+      This is a sidebar!
+      <div class="map-button-container">
+        <div id="rectangle-button">
+          <img src="images/rectangle.png">
+        </div> 
+      </div>
+      <div class="map-button-container">
+        <div id="circle-button">
+          <img src="images/circle.png">
+        </div> 
+      </div>
+      <div class="map-button-container main-sidebar">
+        <div id="generate-flight">
+            Generate Flight Path
+        </div>
+      </div>
+    </div>
+    <div class="main">
+      <div class="title">
+        Data Visualization
+      </div>
+      <div id="map"></div>
+    </div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbprcqa9fyhql1QJQAr2M9k662Z6BiPko&libraries=drawing,visualization&callback=initMap"
+    async defer></script>
+    <script>
+      // You can also require other files to run in this process
+      require('./renderer.js')
+    </script>
+    <script src="./script.js"></script>
+  </body>
+</html>

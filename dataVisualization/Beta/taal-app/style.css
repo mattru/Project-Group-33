@@ -1,0 +1,77 @@
+/* Always set the map height explicitly to define the size of the div
+* element that contains the map. */
+#map {
+    height: calc(100% - 3.5em);
+}
+/* Optional: Makes the sample page fill the window. */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    height: 100%;
+    width: auto;
+}
+
+.sidebar {
+    height:100%;
+    position: fixed;
+    width: 160px;
+    background-color: darkgray;
+    top: 0px;
+    left: 0px;
+}
+
+.map-button-container {
+    margin-top: 15px;
+    height: 35px;
+    width: 100%;
+}
+
+.map-button-container div {
+    float: right;
+    margin-right: 5%;
+    height: 80%;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: white;
+}
+
+/* .map-button-container a {
+    float: right;
+    margin-right: 5%;
+    height: 80%;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: white;
+} */
+
+.map-button-container :hover {
+    background-color: rgb(41, 41, 41);
+    cursor: pointer;
+}
+
+.main-sidebar {
+    position: absolute;
+    bottom: 0px;
+    margin-bottom: 10%;
+}
+
+#generate-flight {
+    text-align: center;
+}
+
+.main {
+    height: 100%;
+    margin-left: 160px;
+}
+
+.title {
+    padding: .3em;
+    text-align: center;
+    background-color: rgb(102, 101, 101);
+    font-size: 2em;
+    font-weight: bold;
+}
