@@ -1,5 +1,4 @@
 var tableDataArray = [];
-var heatMapData = [];
 
 var map;
 var heatmap;
@@ -23,30 +22,29 @@ function initMap() {
         zoom: 14
     });
 
-    //insert data initialization function here
-    heatmapData = [ //example data points
-        {location: new google.maps.LatLng(44.782, -123.447), weight: 0.5},
-        new google.maps.LatLng(44.782, -123.445),
-        {location: new google.maps.LatLng(44.782, -123.443), weight: 2},
-        {location: new google.maps.LatLng(44.782, -123.441), weight: 3},
-        {location: new google.maps.LatLng(44.782, -123.439), weight: 2},
-        new google.maps.LatLng(44.782, -123.437),
-        {location: new google.maps.LatLng(44.782, -123.435), weight: 0.5},
-      
-        {location: new google.maps.LatLng(44.785, -123.447), weight: 3},
-        {location: new google.maps.LatLng(44.785, -123.445), weight: 2},
-        new google.maps.LatLng(44.785, -123.443),
-        {location: new google.maps.LatLng(44.785, -123.441), weight: 0.5},
-        new google.maps.LatLng(44.785, -123.439),
-        {location: new google.maps.LatLng(44.785, -123.437), weight: 2},
-        {location: new google.maps.LatLng(44.785, -123.435), weight: 3}
-    ];
+    //insert data initialization function here via push
+    var heatmapData = new Array();
+    heatmapData.push(new google.maps.LatLng(44.572, -123.237)); //example data points, heatmap stays same though
+    heatmapData.push(new google.maps.LatLng(44.582, -123.277));
+    heatmapData.push(new google.maps.LatLng(44.592, -123.227));
+    heatmapData.push(new google.maps.LatLng(44.542, -123.257));
     
+    var dataPoints = new google.maps.Polyline({
+        path: heatmapData,
+        geodesic: true,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+      });
+
     heatmap = new google.maps.visualization.HeatmapLayer({
         data: heatmapData
     });
 
     heatmap.setMap(map);
+    dataPoints.setMap(map);
+
+    //need to add bearing layer
 };
 
 function convertData() { //convert html to array
