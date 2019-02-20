@@ -4,6 +4,7 @@ var map;
 var drawingManager;
 var selectedShape = null;
 var prevShape = null;
+var prevZoom = 0;
 var flightPathLines = [];
 
 const flightDiffAmount = .0008;
@@ -51,6 +52,18 @@ function initMap() {
 
     drawingManager = new google.maps.drawing.DrawingManager();
 
+    google.maps.event.addListener(map, 'zoom_changed', function() {
+        console.log(map.getZoom());
+        
+        let zoom = map.getZoom();
+
+        if ((prevZoom == 16 && map.getZoom() == 15)
+            || (prevZoom == 15 && map.getZoom() == 16)) {
+                recalculateFlightPath();
+            }
+
+        prevZoom = zoom;
+    })
     google.maps.event.addListener(drawingManager, 'overlaycomplete', completePolygon);
     google.maps.event.addListener(map, 'click', clearSelection);
 
@@ -85,14 +98,14 @@ function completePolygon(event) {
     google.maps.event.addListener(newShape, 'click', function() {
         setSelection(newShape);
     });
-    google.maps.event.addListener(newShape, 'dragend', dragComplete);
+    google.maps.event.addListener(newShape, 'dragend', recalculateFlightPath);
 
     selectedShape = newShape;
     prevShape = newShape;
     generateFlightPath();
 };
 
-function dragComplete(event) {
+function recalculateFlightPath(event) {
     deleteFlightPath();
     generateFlightPath();
 }
@@ -132,18 +145,25 @@ function deleteFlightPath() {
 }
 
 function calcIterAmount(northWest, southEast) {
-    var latDiff = Math.abs(northWest.lat - southEast.lat)
-    var lngDiff = Math.abs(northWest.lng - southEast.lng)
 
-    var total = (latDiff > lngDiff) ? latDiff : lngDiff;
+    // zoom level >= 17 can see actual flight path
+    // zoom level < 17 should see
+    if (map.getZoom() > 15) {
+        return flightDiffAmount;
+    } else {
+        var latDiff = Math.abs(northWest.lat - southEast.lat)
+        var lngDiff = Math.abs(northWest.lng - southEast.lng)
 
-    if (total < flightDiffAmount ||
-        latDiff < total / 10 ||
-        lngDiff < total / 10) {
-        return null;
+        var total = (latDiff > lngDiff) ? latDiff : lngDiff;
+
+        if (total < flightDiffAmount ||
+            latDiff < total / 10 ||
+            lngDiff < total / 10) {
+            return null;
+        }
+
+        return total / 10;
     }
-
-    return total / 10;
 }
 
 function generateFlightPath() {
@@ -170,9 +190,9 @@ function generateFlightPath() {
           path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
         };
 
-        for (var i = northWest.lat - flightDiffAmount; i > southEast.lat; i -= flightDiffAmount) {
+        for (var i = northWest.lat - diff; i > southEast.lat; i -= diff) {
             if (right) {
-                for (var j = northWest.lng + flightDiffAmount; j < southEast.lng; j += flightDiffAmount) {
+                for (var j = northWest.lng + diff; j < southEast.lng; j += diff) {
                     if (prevCoord) {
                         flightPathLines.push(new google.maps.Polyline({
                             path: [prevCoord, {lat: i, lng: j}],
@@ -188,7 +208,7 @@ function generateFlightPath() {
                 }
             }
             else {
-                for (var j = southEast.lng - flightDiffAmount; j > northWest.lng; j -= flightDiffAmount) {
+                for (var j = southEast.lng - diff; j > northWest.lng; j -= diff) {
                     if (prevCoord) {
                         flightPathLines.push(new google.maps.Polyline({
                             path: [prevCoord, {lat: i, lng: j}],
