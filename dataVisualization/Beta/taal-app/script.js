@@ -23,32 +23,39 @@ function initMap() {
     });
 
     //insert data initialization function here via push
+    var polymapData = new Array();
     var heatmapData = new Array();
-    heatmapData.push(new google.maps.LatLng(44.572, -123.237)); //example data points, heatmap stays same though
-    heatmapData.push(new google.maps.LatLng(44.582, -123.277));
-    heatmapData.push(new google.maps.LatLng(44.592, -123.227));
-    heatmapData.push(new google.maps.LatLng(44.542, -123.257));
+    addToArrays(polymapData,heatmapData,44.572,-123.237,0.5); //(polymap,heatmap, lat, lng, weight of heatmap)
+    addToArrays(polymapData,heatmapData,44.582,-123.277,0.3);
+    addToArrays(polymapData,heatmapData,44.592,-123.227,0.7);
+    addToArrays(polymapData,heatmapData,44.542,-123.257,3);
+
     
+
+    //initialize polyline overlay
     var dataPoints = new google.maps.Polyline({
-        path: heatmapData,
+        path: polymapData,
         geodesic: true,
         strokeColor: '#FF0000',
         strokeOpacity: 1.0,
         strokeWeight: 2
-      });
+    });
+    dataPoints.setMap(map);
 
+    //initialize heatmap overlay
     heatmap = new google.maps.visualization.HeatmapLayer({
         data: heatmapData
     });
 
+    heatmap.set('opacity', heatmap.get('opacity') ? null : 0.5); //opacity 0.5
+    heatmap.set('radius', heatmap.get('radius') ? null : 50); //overall radius
     heatmap.setMap(map);
-    dataPoints.setMap(map);
 
     //need to add bearing layer
 };
 
 function convertData() { //convert html to array
-    $("table#cartGrid tr").each(function() {
+    $("table#cartGrid tr").each(function() { //myTableArray[1][3] // Fourth td of the second tablerow
         var arrayOfThisRow = [];
         var tableData = $(this).find('td');
         if (tableData.length > 0) {
@@ -56,5 +63,10 @@ function convertData() { //convert html to array
             tableDataArray.push(arrayOfThisRow);
         }
     });
+}
+
+function addToArrays(poly,heat,lat,lng,w) { //add datapoints to arrays
+    poly.push(new google.maps.LatLng(lat, lng));
+    heat.push({location: new google.maps.LatLng(lat, lng), weight: w});
 }
 
