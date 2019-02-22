@@ -1,7 +1,6 @@
 var tableDataArray = [];
 
 var map;
-var heatmap;
 
 
 document.getElementById("generate-flight").addEventListener("click", function () {
@@ -22,15 +21,14 @@ function initMap() {
         zoom: 14
     });
 
-    //insert data initialization function here via push
+
     var polymapData = new Array();
     var heatmapData = new Array();
-    addToArrays(polymapData,heatmapData,44.572,-123.237,0.5); //(polymap,heatmap, lat, lng, weight of heatmap)
-    addToArrays(polymapData,heatmapData,44.582,-123.277,0.3);
-    addToArrays(polymapData,heatmapData,44.592,-123.227,0.7);
-    addToArrays(polymapData,heatmapData,44.542,-123.257,3);
+    addToArrays(polymapData,heatmapData,44.572,-123.237,0.5,0); //(polymap,heatmap, lat, lng, heatmap weight of datapoint, bearing)
+    addToArrays(polymapData,heatmapData,44.582,-123.277,0.3,30); //bearing is degrees where North(0), East(90), South(180), West(270)
+    addToArrays(polymapData,heatmapData,44.592,-123.227,0.7,110);
+    addToArrays(polymapData,heatmapData,44.542,-123.257,3,180);
 
-    
 
     //initialize polyline overlay
     var dataPoints = new google.maps.Polyline({
@@ -43,16 +41,37 @@ function initMap() {
     dataPoints.setMap(map);
 
     //initialize heatmap overlay
-    heatmap = new google.maps.visualization.HeatmapLayer({
+    var heatmap = new google.maps.visualization.HeatmapLayer({
         data: heatmapData
     });
 
     heatmap.set('opacity', heatmap.get('opacity') ? null : 0.5); //opacity 0.5
     heatmap.set('radius', heatmap.get('radius') ? null : 50); //overall radius
     heatmap.setMap(map);
-
-    //need to add bearing layer
 };
+
+function addToArrays(poly,heat,lat,lng,w,b) { //add datapoints to arrays
+    poly.push(new google.maps.LatLng(lat, lng)); //general path
+    heat.push({location: new google.maps.LatLng(lat, lng), weight: w}); //heatmap data
+
+    //generate bearing line from datapoint, bearing is North(0), East(90), South(180), West(270)
+    var lineLength = 0.03; //generalized variable for length of bearing
+    var bLat = lat + lineLength *Math.sin((-b + 90) * Math.PI / 180); //y
+    var bLng = lng + lineLength *Math.cos((-b + 90) * Math.PI / 180); //x
+    var bearingArray = new Array();
+    bearingArray.push(new google.maps.LatLng(lat, lng));
+    bearingArray.push(new google.maps.LatLng(bLat, bLng));
+
+    var bearingLine = new google.maps.Polyline({ //bearing lines per point
+        path: bearingArray,
+        geodesic: true,
+        strokeColor: '#0000FF',
+        strokeOpacity: 1.0,
+        strokeWeight: 1
+    });
+    bearingLine.setMap(map);  //bearing overlay per point
+}
+
 
 function convertData() { //convert html to array
     $("table#cartGrid tr").each(function() { //myTableArray[1][3] // Fourth td of the second tablerow
@@ -65,8 +84,4 @@ function convertData() { //convert html to array
     });
 }
 
-function addToArrays(poly,heat,lat,lng,w) { //add datapoints to arrays
-    poly.push(new google.maps.LatLng(lat, lng));
-    heat.push({location: new google.maps.LatLng(lat, lng), weight: w});
-}
-
+//to do: add triangulation method

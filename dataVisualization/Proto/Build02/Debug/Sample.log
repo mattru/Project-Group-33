@@ -1,13 +1,55 @@
 ﻿  sample.cpp
-c:\users\matthew\documents\cs462\mapinfo\proto\build02\sample.cpp(122): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\matthew\documents\cs462\mapinfo\proto\build02\sample.cpp(658): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\matthew\documents\cs462\mapinfo\proto\build02\sample.cpp(705): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\matthew\documents\cs462\mapinfo\proto\build02\sample.cpp(707): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\matthew\documents\cs462\mapinfo\proto\build02\sample.cpp(737): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-c:\users\matthew\documents\cs462\mapinfo\proto\build02\sample.cpp(737): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\matthew\documents\cs462\mapinfo\proto\build02\sample.cpp(753): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-c:\users\matthew\documents\cs462\mapinfo\proto\build02\sample.cpp(753): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
-c:\users\matthew\documents\cs462\mapinfo\proto\build02\sample.cpp(754): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-c:\users\matthew\documents\cs462\mapinfo\proto\build02\sample.cpp(754): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\sample.cpp(122): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\sample.cpp(658): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\sample.cpp(705): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\sample.cpp(707): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\sample.cpp(737): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\sample.cpp(737): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\sample.cpp(753): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\sample.cpp(753): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\sample.cpp(754): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\sample.cpp(754): warning C4244: 'argument': conversion from 'double' to 'GLfloat', possible loss of data
+  image_DXT.c
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\image_dxt.c(92): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+  image_helper.c
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\image_helper.c(325): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\image_helper.c(366): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\image_helper.c(373): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\image_helper.c(415): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\image_helper.c(422): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+  SOIL.c
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\soil.c(1719): warning C4018: '<=': signed/unsigned mismatch
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\soil.c(1729): warning C4018: '<': signed/unsigned mismatch
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\soil.c(1841): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+  stb_image_aug.c
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stb_image_aug.c(177): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stb_image_aug.c(251): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stb_image_aug.c(303): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stb_image_aug.c(1557): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stb_image_aug.c(2394): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stb_image_aug.c(2709): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stb_image_aug.c(2995): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stb_image_aug.c(3209): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stb_image_aug.c(3548): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stb_image_aug.c(3644): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stbi_dds_aug_c.h(362): warning C4018: '>': signed/unsigned mismatch
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stbi_dds_aug_c.h(366): warning C4018: '>': signed/unsigned mismatch
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stbi_dds_aug_c.h(390): warning C4018: '<': signed/unsigned mismatch
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stbi_dds_aug_c.h(427): warning C4018: '<': signed/unsigned mismatch
+c:\users\matthew\documents\github\project-group-33\datavisualization\proto\build02\soil\stbi_dds_aug_c.h(498): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
+  Generating Code...
 sample.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
-  Sample.vcxproj -> C:\Users\Matthew\Documents\CS462\MapInfo\Proto\Build02\.\Debug\Sample.exe
+  Sample.vcxproj -> C:\Users\Matthew\Documents\GitHub\Project-Group-33\dataVisualization\Proto\Build02\.\Debug\Sample.exe
