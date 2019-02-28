@@ -75,3 +75,15 @@ img {
     font-size: 2em;
     font-weight: bold;
 }
+
+/* index page */
+#tabBTN {
+  padding: 30px;
+  align-items: center;
+  align: center;
+}
+
+/* rawData page */
+table, td {
+  border: 1px solid black;
+}
