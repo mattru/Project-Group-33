@@ -43,8 +43,6 @@ document.getElementById("circle-button").addEventListener("click", function() {
     drawingManager.setMap(map);
 });
 
-// document.getElementById("generate-flight").addEventListener("click", generateFlightPath);
-
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 44.5646, lng: -123.2620},
