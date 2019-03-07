@@ -3,10 +3,10 @@ var fs = require('fs');
 var map;
 var drawingManager;
 var selectedShape = null;
-var prevShape = null;
+var mapShape = null;
 var prevZoom = 0;
-var curPath = [];
 var flightMap = new Map;
+var testMarker = null;
 
 const flightDiffAmount = .0008;
 
@@ -43,6 +43,33 @@ document.getElementById("circle-button").addEventListener("click", function() {
     drawingManager.setMap(map);
 });
 
+document.getElementById("download-flight").addEventListener("click", function() {
+    flightPath = flightMap.get(flightDiffAmount);
+    if (flightPath == undefined) {
+        flightPath = generateFlightPath(16, null)
+    }
+    
+    let middlePath = flightPath[Math.round(flightPath.length / 2)];
+    let testMarkerLat = middlePath.getPath().getArray()[0].lat();
+    let testMarkerLng = middlePath.getPath().getArray()[0].lng();
+
+    testMarker = new google.maps.Marker({
+        position: {lat: testMarkerLat, lng: testMarkerLng},
+        map: map,
+        title: 'Test marker for triangulation'
+    });
+
+    try {
+        // TODO: Write to file
+        // fs.writeFileSync('flight_planner.txt', flightPath[i], 'utf-8'); 
+    }
+    catch(e) {
+        alert('Failed to save file: ', e);
+    }
+
+});
+
+// initMap initializes the Google Map, as well as event handlers
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 44.5646, lng: -123.2620},
@@ -57,7 +84,8 @@ function initMap() {
 
         if ((prevZoom == 16 && map.getZoom() == 15)
             || (prevZoom == 15 && map.getZoom() == 16)) {
-                recalculateFlightPath();
+                unsetFlightPath(prevZoom);
+                generateFlightPath(zoom, map)
         }
 
         prevZoom = zoom;
@@ -84,6 +112,8 @@ function initMap() {
 
 };
 
+// completePolygon handles when a polygon has finished being drawn
+// on the map
 function completePolygon(event) {
     let newShape = event.overlay;
 
@@ -95,19 +125,16 @@ function completePolygon(event) {
     google.maps.event.addListener(newShape, 'click', function() {
         setSelection(newShape);
     });
-    google.maps.event.addListener(newShape, 'dragend', recalculateFlightPath);
+    google.maps.event.addListener(newShape, 'dragend', function() {
+        recalculateFlightPath(map.getZoom())
+    });
 
     selectedShape = newShape;
-    prevShape = newShape;
-    generateFlightPath();
+    mapShape = newShape;
+    generateFlightPath(map.getZoom(), map);
 };
 
-function recalculateFlightPath(event) {
-    deleteFlightPath(curPath);
-    flightMap.clear();
-    generateFlightPath();
-}
-
+// setSelection sets the current shape as selected
 function setSelection(newShape) {
     clearSelection();
     newShape.setEditable(true);
@@ -115,6 +142,7 @@ function setSelection(newShape) {
     selectedShape = newShape;
 }
 
+// clearSelection clears the selected shape
 function clearSelection() {
     if (selectedShape){
         selectedShape.setEditable(false);
@@ -123,31 +151,64 @@ function clearSelection() {
     }
 }
 
+// deletePrevShape deletes the previous shape and all
+// of the associated flight path data
 function deletePrevShape() {
-    if (prevShape) {
-        prevShape.setMap(null);
-        deleteFlightPath(curPath);
+    if (mapShape) {
+        mapShape.setMap(null);
+        unsetFlightPath(map.getZoom());
     }
     flightMap.clear();
 }
 
-function deleteFlightPath(flightPath) {
-    for (var i = 0; i < flightPath.length ; i++) {
+// unsetFlightPath clears a flightPath from the map
+// so it is no longer visible
+function unsetFlightPath(zoom) {
+    if (testMarker) {
+        testMarker.setMap(null);
+    }
+
+    diff = calcIterAmount(zoom)
+    let flightPath = flightMap.get(diff)
+    if (flightPath == undefined) {
+        console.log("flight path not found")
+        return;
+    }
+    for (let i = 0; i < flightPath.length ; i++) {
         flightPath[i].setMap(null);
     }
 }
 
-function calcIterAmount(northWest, southEast) {
+// setFlightPath adds a flightPath as visible on the map
+function setFlightPath(flightPath) {
+    for (let i = 0; i < flightPath.length; i++) {
+        flightPath[i].setMap(map);
+    }
+}
+
+// calcIterAmount calculates what difference between flight
+// path coordinates should be used when generating.
+// Is affected by zoom level
+function calcIterAmount(zoom) {
+
+    let northWest = {
+        lat: mapShape.getBounds().getNorthEast().lat(),
+        lng: mapShape.getBounds().getSouthWest().lng() 
+    };
+    let southEast = {
+        lat: mapShape.getBounds().getSouthWest().lat(),
+        lng: mapShape.getBounds().getNorthEast().lng()
+    };
 
     // zoom level >= 16 can see actual flight path
     // zoom level < 16 should see
-    if (map.getZoom() > 15) {
+    if (zoom > 15) {
         return flightDiffAmount;
     } else {
-        var latDiff = Math.abs(northWest.lat - southEast.lat)
-        var lngDiff = Math.abs(northWest.lng - southEast.lng)
+        let latDiff = Math.abs(northWest.lat - southEast.lat)
+        let lngDiff = Math.abs(northWest.lng - southEast.lng)
 
-        var total = (latDiff > lngDiff) ? latDiff : lngDiff;
+        let total = (latDiff > lngDiff) ? latDiff : lngDiff;
 
         if (total / 10 < flightDiffAmount) {
             return flightDiffAmount
@@ -159,39 +220,42 @@ function calcIterAmount(northWest, southEast) {
     }
 }
 
-function generateFlightPath() {
-    if (prevShape) {
+// generateFlightPath takes a zoom context and generates a flight
+// path onto a given context and for a certain zoom level
+function generateFlightPath(zoom, context) {
+    if (mapShape) {
         let northWest = {
-            lat: prevShape.getBounds().getNorthEast().lat(),
-            lng: prevShape.getBounds().getSouthWest().lng() 
+            lat: mapShape.getBounds().getNorthEast().lat(),
+            lng: mapShape.getBounds().getSouthWest().lng() 
         };
         let southEast = {
-            lat: prevShape.getBounds().getSouthWest().lat(),
-            lng: prevShape.getBounds().getNorthEast().lng()
+            lat: mapShape.getBounds().getSouthWest().lat(),
+            lng: mapShape.getBounds().getNorthEast().lng()
         };
 
-        var right = true;
-        var prevCoord = null;
+        let right = true;
+        let prevCoord = null;
+        let curPath = [];
 
-        var diff = calcIterAmount(northWest, southEast); 
+        let diff = calcIterAmount(zoom); 
         if (diff == null) {
             alert("Survey area is too small! Please select a larger area.");
             return;
         }
 
         if (flightMap.get(diff) != undefined) {
-            showPath(flightMap.get(diff));
-            let endTime = new Date();
-            return;
+            setFlightPath(flightMap.get(diff));
+            return flightMap.get(diff);
         }
+        console.log("generating flight path");
 
-        var lineSymbol = {
+        let lineSymbol = {
           path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
         };
 
-        for (var i = northWest.lat - diff; i > southEast.lat; i -= diff) {
+        for (let i = northWest.lat - diff; i > southEast.lat; i -= diff) {
             if (right) {
-                for (var j = northWest.lng + diff; j < southEast.lng; j += diff) {
+                for (let j = northWest.lng + diff; j < southEast.lng; j += diff) {
                     if (prevCoord) {
                         curPath.push(new google.maps.Polyline({
                             path: [prevCoord, {lat: i, lng: j}],
@@ -199,7 +263,7 @@ function generateFlightPath() {
                                 icon: lineSymbol,
                                 offset: '100%'
                             }],
-                            map: map,
+                            map: context,
                             editable: false
                         }));
                     }
@@ -207,7 +271,7 @@ function generateFlightPath() {
                 }
             }
             else {
-                for (var j = southEast.lng - diff; j > northWest.lng; j -= diff) {
+                for (let j = southEast.lng - diff; j > northWest.lng; j -= diff) {
                     if (prevCoord) {
                         curPath.push(new google.maps.Polyline({
                             path: [prevCoord, {lat: i, lng: j}],
@@ -215,7 +279,7 @@ function generateFlightPath() {
                                 icon: lineSymbol,
                                 offset: '100%'
                             }],
-                            map: map,
+                            map: context,
                             editable: false
                         }));
                     }
@@ -227,22 +291,7 @@ function generateFlightPath() {
         }
 
         flightMap.set(diff, curPath.slice());
+        return curPath;
     }
 
-
-    try {
-        fs.writeFileSync('flight_planner.txt', "Hello World\n", 'utf-8'); 
-    }
-    catch(e) {
-        alert('Failed to save the file !');
-    }
-}
-
-function showPath(flightPath) {
-    deleteFlightPath(curPath);
-    
-    for (var i = 0; i < flightPath.length; i++) {
-        flightPath[i].setMap(map);
-    }
-    curPath = flightPath
 }
