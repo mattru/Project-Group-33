@@ -48,7 +48,7 @@ document.getElementById("download-flight").addEventListener("click", function() 
     if (flightPath == undefined) {
         flightPath = generateFlightPath(16, null)
     }
-    
+
     let middlePath = flightPath[Math.round(flightPath.length / 2)];
     let testMarkerLat = middlePath.getPath().getArray()[0].lat();
     let testMarkerLng = middlePath.getPath().getArray()[0].lng();
@@ -59,9 +59,13 @@ document.getElementById("download-flight").addEventListener("click", function() 
         title: 'Test marker for triangulation'
     });
 
+    // save path to local storage so it can be accessed in Track page
+    localStorage.setItem("flightPath", JSON.stringify(flightPath));
+    // console.log(flightPath)
+
     try {
         // TODO: Write to file
-        // fs.writeFileSync('flight_planner.txt', flightPath[i], 'utf-8'); 
+        // fs.writeFileSync('flight_planner.txt', flightPath[i], 'utf-8');
     }
     catch(e) {
         alert('Failed to save file: ', e);
@@ -79,7 +83,7 @@ function initMap() {
     drawingManager = new google.maps.drawing.DrawingManager();
 
     google.maps.event.addListener(map, 'zoom_changed', function() {
-        
+
         let zoom = map.getZoom();
 
         if ((prevZoom == 16 && map.getZoom() == 15)
@@ -193,7 +197,7 @@ function calcIterAmount(zoom) {
 
     let northWest = {
         lat: mapShape.getBounds().getNorthEast().lat(),
-        lng: mapShape.getBounds().getSouthWest().lng() 
+        lng: mapShape.getBounds().getSouthWest().lng()
     };
     let southEast = {
         lat: mapShape.getBounds().getSouthWest().lat(),
@@ -226,7 +230,7 @@ function generateFlightPath(zoom, context) {
     if (mapShape) {
         let northWest = {
             lat: mapShape.getBounds().getNorthEast().lat(),
-            lng: mapShape.getBounds().getSouthWest().lng() 
+            lng: mapShape.getBounds().getSouthWest().lng()
         };
         let southEast = {
             lat: mapShape.getBounds().getSouthWest().lat(),
@@ -237,7 +241,7 @@ function generateFlightPath(zoom, context) {
         let prevCoord = null;
         let curPath = [];
 
-        let diff = calcIterAmount(zoom); 
+        let diff = calcIterAmount(zoom);
         if (diff == null) {
             alert("Survey area is too small! Please select a larger area.");
             return;

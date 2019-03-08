@@ -5,30 +5,16 @@
     <title>Track</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 
-
-    <!-- <link rel="stylesheet" href="node_modules/electron-tabs/electron-tabs.css"> -->
-
   </head>
   <body>
 
-    <!-- <div class="etabs-tabgroup">
-      <div class="etabs-tabs"></div>
-      <div class="etabs-buttons"></div>
-    </div>
-    <div class="etabs-views"></div> -->
-
     <div class="sidebar">
       This is a sidebar!
-      <!-- <div class="map-button-container">
-        <div id="rectangle-button">
-          <img src="images/rectangle.png">
-        </div>
-      </div>
-      <div class="map-button-container">
-        <div id="circle-button">
-          <img src="images/circle.png">
-        </div>
-      </div> -->
+
+      <input id="tabBTN" type="button" value="Home"
+       onclick="window.location = './index.html'" />
+
+
       <div class="map-button-container main-sidebar">
         <div id="generate-data">
             Select Data File
@@ -44,9 +30,66 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbprcqa9fyhql1QJQAr2M9k662Z6BiPko&libraries=drawing&callback=initMap"
     async defer></script>
     <script>
-      // You can also require other files to run in this process
+      // gets path generated from local storage
+      var path = JSON.parse(localStorage.getItem("flightPath")); // path is the array generated in flightplanner
+      if (path) {
+        console.log(path)
+      }
+      else {
+        console.log("No flight path generated yet.") // if you see this in console then you need to go to flighplanner and generate a path first
+      }
+
+      // deletes local storage
+      localStorage.clear(); // everytime you leave the track page it will delete the generated path(for testing purposes) can remove this line and it preserve path
+
+
+
+      // initMap initializes the Google Map, as well as event handlers
+      function initMap() {
+          map = new google.maps.Map(document.getElementById('map'), {
+              center: {lat: 44.5646, lng: -123.2620},
+              zoom: 14
+          });
+
+          drawingManager = new google.maps.drawing.DrawingManager();
+
+          google.maps.event.addListener(map, 'zoom_changed', function() {
+
+              let zoom = map.getZoom();
+
+              if ((prevZoom == 16 && map.getZoom() == 15)
+                  || (prevZoom == 15 && map.getZoom() == 16)) {
+                      unsetFlightPath(prevZoom);
+                      generateFlightPath(zoom, map)
+              }
+
+              prevZoom = zoom;
+          })
+          // google.maps.event.addListener(drawingManager, 'overlaycomplete', completePolygon);
+          // google.maps.event.addListener(map, 'click', clearSelection);
+
+          // drawingManager.setOptions({
+          //     drawingMode : google.maps.drawing.OverlayType.RECTANGLE,
+          //     drawingControl : true,
+          //     drawingControlOptions : {
+          //         position : google.maps.ControlPosition.TOP_CENTER,
+          //         drawingModes : [ google.maps.drawing.OverlayType.RECTANGLE ]
+          //     },
+          //     polygonOptions : {
+          //         strokeColor : '#6c6c6c',
+          //         strokeWeight : 3.5,
+          //         fillColor : '#926239',
+          //         fillOpacity : 0.6,
+          //         editable: true,
+          //         draggable: true
+          //     }
+          // });
+
+      };
+
       require('./renderer.js')
     </script>
-    <script src="./script.js"></script>
+    <!-- <script src="./script.js"></script> -->
+
   </body>
 </html>
