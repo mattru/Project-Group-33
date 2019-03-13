@@ -61,7 +61,7 @@ document.getElementById("download-flight").addEventListener("click", function() 
 
     // save path to local storage so it can be accessed in Track page
     localStorage.setItem("flightPath", JSON.stringify(flightPath));
-    // console.log(flightPath)
+    localStorage.setItem("middlePath", JSON.stringify(middlePath));
 
     try {
         // TODO: Write to file
