@@ -1,26 +1,35 @@
 var freqArray = new Array(); //filler for different frequencies each with their own dataArray + frequency number
 var dataArray = new Array(); //imported data array
 var map;
+var loadMap;
+var iteration = 0;
 var swapNum = 0;
+//function initFreqArray(arrayNumber){ //****** clarification with team ******/
+    //already done?
+//}
 
 function toggleMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
+    loadMap = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 44.5646, lng: -123.2620},
         zoom: 14
     }); 
     swapNum++;
-    if(swapNum >= 2)
+    if(swapNum >= freqArray.length)
     {
         swapNum = 0;
     }
     generate();
+    
+    map = loadMap; //reinitialize map
 }
 function initMap() { //default map is first in freqArray
-    map = new google.maps.Map(document.getElementById('map'), {
+    initFreqArray();
+    loadMap = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 44.5646, lng: -123.2620},
         zoom: 14
     }); 
     generate();
+    map = loadMap; //initialize first map
 }
 function generate(){
     var polymapData = new Array(); //array of positional data
@@ -42,7 +51,7 @@ function generate(){
 
     //import data values: (n items)
     //temporary testing values
-    if (swapNum == 1)
+    /*if (swapNum == 1)
     {
         addToArrays(polymapData,bearingArray,44.572,-123.237,0,0,0); //(polymap output, bearing output, lat, lng, frontIntensity,backRInt,backLInt)
         addToArrays(polymapData,bearingArray,44.582,-123.257,0,0,2); 
@@ -57,14 +66,14 @@ function generate(){
         addToArrays(polymapData,bearingArray,44.512,-123.227,0,300,0);
         addToArrays(polymapData,bearingArray,44.522,-123.347,0,0,300);
         addToArrays(polymapData,bearingArray,44.532,-123.257,0,0,300);
-    }
+    }*/
 
     //Actual
-    /*for (i=0; i < freqArray[iteration].length; i++)
+    for (i=0; i < freqArray[iteration].length; i++)
     {
         addToArrays(polymapData,bearingArray,freqArray[iteration].dataArray[i].lat,freqArray[iteration].dataArray[i].lng,
             freqArray[iteration].dataArray[i].bearF,freqArray[iteration].dataArray[i].bearR,freqArray[iteration].dataArray[i].bearL);
-    }*/
+    }
 
 
     //debug:
@@ -95,7 +104,7 @@ function generate(){
         strokeOpacity: 1.0,
         strokeWeight: 2
     });
-    dataPoints.setMap(map);
+    dataPoints.setMap(loadMap);
 
     //initialize heatmap overlay
     var heatmap = new google.maps.visualization.HeatmapLayer({
@@ -107,7 +116,7 @@ function generate(){
         radius: 100,
         opacity: 0.5
     });
-    heatmap.setMap(map);
+    heatmap.setMap(loadMap);
     //heatmap.set('opacity', heatmap.get('opacity') ? null : 0.5); //opacity 0.5 ****constants, might need to manipulate****
     //heatmap.set('radius', heatmap.get('radius') ? null : 50); //overall radius
     /*google.maps.event.addListener(map, 'zoom_changed', function () {
@@ -172,9 +181,9 @@ function addToArrays(poly,bear,lat,lng,frontF,backRF,backLF) { //add datapoints 
         });
 
         //render
-        bearingLine.setMap(map);  //bearing overlay per point
-        errorLine1.setMap(map);
-        errorLine2.setMap(map);
+        bearingLine.setMap(loadMap);  //bearing overlay per point
+        errorLine1.setMap(loadMap);
+        errorLine2.setMap(loadMap);
     }
 }
 
@@ -233,7 +242,7 @@ function averageData(interArray) {
             position: averageIntersection,
             title:"Average Location"
         });
-        avgMarker.setMap(map);
+        avgMarker.setMap(loadMap);
     }
 }
 
@@ -281,7 +290,7 @@ function medianData(interArray) { //take median intersection point of dataset, O
         position: medianIntersection,
         title:"Median Location"
     });
-    medMarker.setMap(map);
+    medMarker.setMap(loadMap);
 }
 
 //credits to Paul Bourke for intersection point algorithm
@@ -394,8 +403,8 @@ function testAddToArraysAbs(poly,bear,lat,lng,abs) { //add datapoints to positio
         });
 
         //render
-        bearingLine.setMap(map);  //bearing overlay per point
-        errorLine1.setMap(map);
-        errorLine2.setMap(map);
+        bearingLine.setMap(loadMap);  //bearing overlay per point
+        errorLine1.setMap(loadMap);
+        errorLine2.setMap(loadMap);
     }
 }
