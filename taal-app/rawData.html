@@ -7,44 +7,97 @@
   </head>
   <body>
     <head>
-      <input type="file" name="file" id="file">
    </head>
+   
    <body>
-      <table id="myTable">
-        <tr>
-          <td> Readings </td>
-        </tr>
+      <div class="sidebar">
 
-      </table>
-      <br>
+          <div class="Menu">
+            <input id="tabBTN" type="button" value="FlightPlan"
+            onclick="window.location = './flightPlanner.html'" />
+          
+            <input id="tabBTN" type="button" value="Data"
+            onclick="window.location = './rawData.html'" />
+          
+            <input id="tabBTN" type="button" value="Track"
+            onclick="window.location = './processedData.html'" />
+          </div>
+      </div>
+
+      <div class="main">
+          <div class="title">
+            Data Input
+          </div>
+          <div>
+              <form class="form-horizontal well">
+                <fieldset>
+                    <label for="csvFileInput"> <strong>CSV File:</strong>
+                    </label>
+                    <input type="file" id="csvFileInput" onchange="handleFiles(this.files)"
+                    accept=".csv">
+                </fieldset>
+              </form>
+          </div>
+          
+          <div id='answer'></div>
+            
+          <script type="text/javascript" src="./CSVscript.js"></script>
+      </div>
    </body>
 
-   <script>
-
-     document.getElementById('file').onchange = function() {
-
-       var file = this.files[0];
-
-       var reader = new FileReader();
-       reader.onload = function(progressEvent) {
-         // Entire file
-         // console.log(this.result);
-
-        var table = document.getElementById("myTable");
-
-         // By lines
-         var lines = this.result.split('\n');
-         for(var line = 0; line < lines.length; line++){
-           if(lines[line].includes("GGA")) {
-            // console.log(lines[line]);
-            var row = table.insertRow(0);
-            var cell1 = row.insertCell(0);
-            cell1.innerHTML =lines[line];
-           }
-         }
-       };
-       reader.readAsText(file);
-     };
-   </script>
-
 </html>
+
+
+
+
+
+<div class="main">
+    <div class="title">
+      Data Input
+    </div>
+    <div id="map">
+      <div>
+<form class="form-horizontal well">
+<fieldset>
+    <label for="csvFileInput"> <strong>CSV File:</strong>
+    </label>
+    <input type="file" id="csvFileInput" onchange="handleFiles(this.files)"
+    accept=".csv">
+</fieldset>
+</form>
+</div>
+
+<div id='answer'></div>
+
+<script type="text/javascript" src="./script.js"></script>
+    </div>
+  </div>
+</body>
+
+<script>
+
+document.getElementById('file').onchange = function() {
+
+ var file = this.files[0];
+
+ var reader = new FileReader();
+ reader.onload = function(progressEvent) {
+   // Entire file
+   // console.log(this.result);
+
+  var table = document.getElementById("myTable");
+
+   // By lines
+   var lines = this.result.split('\n');
+   for(var line = 0; line < lines.length; line++){
+     if(lines[line].includes("GGA")) {
+      // console.log(lines[line]);
+      var row = table.insertRow(0);
+      var cell1 = row.insertCell(0);
+      cell1.innerHTML =lines[line];
+     }
+   }
+ };
+ reader.readAsText(file);
+};
+</script>
