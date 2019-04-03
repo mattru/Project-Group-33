@@ -1,42 +1,39 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>The Autonomous Animal Locator</title>
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
-    <div class="sidebar">
+      <div class="sidebar">
+          <div class="Menu">
+              <input id="tabBTN" type="button" value="FlightPlan"
+                     onclick="window.location = './flightPlanner.html'" />
 
-        <div class="Menu">
-          <input id="tabBTN" type="button" value="FlightPlan"
-          onclick="window.location = './flightPlanner.html'" />
-        
-          <input id="tabBTN" type="button" value="Data"
-          onclick="window.location = './rawData.html'" />
-        
-          <input id="tabBTN" type="button" value="Track"
-          onclick="window.location = './processedData.html'" />
-        </div>
+              <input id="tabBTN" type="button" value="Data"
+                     onclick="window.location = './rawData.html'" />
 
-      This is a sidebar!
-      <div class="map-button-container">
-        <div id="rectangle-button">
-          <img src="images/rectangle.png">
-        </div> 
+              <input id="tabBTN" type="button" value="Track"
+                     onclick="window.location = './processedData.html'" />
+          </div>
+          Select A Shape Below:
+          <div class="map-button-container">
+              <div id="rectangle-button">
+                  <img src="images/rectangle.png">
+              </div>
+          </div>
+          <div class="map-button-container">
+              <div id="circle-button">
+                  <img src="images/circle.png">
+              </div>
+          </div>
+          <div class="map-button-container main-sidebar">
+              <div id="download-flight">
+                  Download Flight
+              </div>
+          </div>
       </div>
-      <div class="map-button-container">
-        <div id="circle-button">
-          <img src="images/circle.png">
-        </div> 
-      </div>
-      <div class="map-button-container main-sidebar">
-        <div id="download-flight">
-            Download Flight
-        </div>
-      </div>
-    </div>
-
     <div class="main">
       <div class="title">
         Flight Planning

@@ -60,8 +60,12 @@ document.getElementById("download-flight").addEventListener("click", function() 
     });
 
     try {
-        // TODO: Write to file
-        // fs.writeFileSync('flight_planner.txt', flightPath[i], 'utf-8'); 
+        // proof it works, extremely slow. is being optimized.
+        fs.unlink('flight_path.plan', (err) => {
+            if (err) throw err;
+            console.log('flight_path.plan was deleted');
+        });
+        WritePLAN(flightPath, testMarkerLat, testMarkerLng);
     }
     catch(e) {
         alert('Failed to save file: ', e);
@@ -294,4 +298,186 @@ function generateFlightPath(zoom, context) {
         return curPath;
     }
 
+}
+
+function WritePLAN(flightPath, testMarkerLat, testMarkerLng) {
+    let doJumpId = 1;
+    //open global brackets and declare filetype
+    fs.appendFileSync('flight_path.plan', '{\n', 'utf-8')
+    fs.appendFileSync('flight_path.plan', '\t\"fileType\": \"Plan\",\n', 'utf-8');
+    //declare geofence, currently no geofences
+    fs.appendFileSync('flight_path.plan', '\t\"geoFence\": {\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t\t\"circles\": [],\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t\t\"polygons\": [],\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t\t\"version\": 2\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t},\n', 'utf-8');//close geoFence section
+    //declare the ground station
+    fs.appendFileSync('flight_path.plan', '\t\"groundStation\": \"QGroundControl\",\n', 'utf-8');
+    //declare mission, will include most of the flightpath information
+    fs.appendFileSync('flight_path.plan', '\t\"mission\": {\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t\t\"cruiseSpeed\": 15,\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t\t\"firmwareType\": 12,\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t\t\"hoverSpeed\": 5,\n', 'utf-8');
+    //declare items section
+    fs.appendFileSync('flight_path.plan', '\t\t\"items\": [\n', 'utf-8');
+    let header = '\t\t\t\t';
+    //first item (camera related, may not need)
+    fs.appendFileSync('flight_path.plan', '\t\t\t{\n', 'utf-8');
+    let params = ['0', '2', 'null', 'null', 'null', 'null', 'null'];
+    doJumpId = writeSimpleItem(true, 530, doJumpId, 2, params, header);
+    fs.appendFileSync('flight_path.plan', '\t\t\t},\n', 'utf-8');//end first item
+    //second item (survey item)
+    fs.appendFileSync('flight_path.plan', '\t\t\t{\n', 'utf-8');
+
+    doJumpId = writeComplexItem(flightPath, doJumpId, header);
+
+    fs.appendFileSync('flight_path.plan', '\t\t\t},\n', 'utf-8');//end second item
+    //third item (return to launch)
+    fs.appendFileSync('flight_path.plan', '\t\t\t{\n', 'utf-8');
+    params = ['0', '0', '0', '0', '0', '0', '0'];
+    doJumpId = writeSimpleItem(true, 20, doJumpId, 2, params, header);
+    fs.appendFileSync('flight_path.plan', '\t\t\t}\n', 'utf-8');//end third item
+
+    fs.appendFileSync('flight_path.plan', '\t\t],\n', 'utf-8');//close items section
+
+    //declare planned home position //not used for flight, vehicle should return to launch point.
+    fs.appendFileSync('flight_path.plan', '\t\t\"plannedHomePosition\": [\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', ('\t\t\t' + testMarkerLat + ',\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', ('\t\t\t' + testMarkerLng + ',\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t\t\t100\n', 'utf-8'); //default 100 meter altitude
+    fs.appendFileSync('flight_path.plan', '\t\t],\n', 'utf-8');//close home position pair
+    //declare vehicle type and mission version
+    fs.appendFileSync('flight_path.plan', '\t\t\"vehicleType\": 2,\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t\t\"version\": 2\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t},\n', 'utf-8');//end mission section
+    //declare rally points, currently no rally points
+    fs.appendFileSync('flight_path.plan', '\t\"rallyPoints\": {\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t\t\"points\": [],\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t\t\"version\": 2\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '\t},\n', 'utf-8');//close rallyPoint section
+    //declare version and close global brackets
+    fs.appendFileSync('flight_path.plan', '\t\"version\": 1\n', 'utf-8');
+    fs.appendFileSync('flight_path.plan', '}', 'utf-8');
+}
+
+function writeSimpleItem(autoContinue, command, doJumpId, frame, params, header) {
+    fs.appendFileSync('flight_path.plan', (header + '\"autoContinue\": ' + autoContinue + ',\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\"command\": ' + command + ',\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\"doJumpId\": ' + doJumpId + ',\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\"frame\": ' + frame + ',\n'), 'utf-8');
+    //start params section
+    fs.appendFileSync('flight_path.plan', (header + '\"params\": [\n'), 'utf-8');
+    let header2 = header + '\t';
+    for (let i = 0; i < params.length; i++) {//loop through parameters and print them
+        if (i == (params.length - 1)) {//don't include ',' in last param entry
+            fs.appendFileSync('flight_path.plan', (header2 + params[i] + '\n'), 'utf-8');
+        }
+        else {
+            fs.appendFileSync('flight_path.plan', (header2 + params[i] + ',\n'), 'utf-8');
+        }
+    }
+    fs.appendFileSync('flight_path.plan', (header + '],\n'), 'utf-8');//close params section
+
+    fs.appendFileSync('flight_path.plan', (header + '\"type\": \"SimpleItem\"\n'), 'utf-8');
+    return doJumpId + 1;
+}
+
+function writeComplexItem(flightPath, doJumpId, header) {
+    fs.appendFileSync('flight_path.plan', (header + '\"TransectStyleComplexItem\": {\n'), 'utf-8');
+    //CameraCalc
+    fs.appendFileSync('flight_path.plan', (header + '\t\"CameraCalc\": {\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\t\"AdjustedFootprintFrontal\": 0,\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\t\"AdjustedFootprintSide\": 10,\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\t\"CameraName\": \"Manual (no camera specs)\",\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\t\"DistanceToSurface\": 50,\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\t\"DistanceToSurfaceRelative\": true,\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\t\"version\": 1\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t},\n'), 'utf-8');
+
+    fs.appendFileSync('flight_path.plan', (header + '\t\"CameraShots\": 0,\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\"CameraTriggerInTurnAround\": false,\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\"FollowTerrain\": false,\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\"HoverAndCapture\": false,\n'), 'utf-8');
+    //Items
+    doJumpId = writeItems(flightPath, header, doJumpId);
+    fs.appendFileSync('flight_path.plan', (header + '\t\"Refly90Degrees\": false,\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\"TurnAroundDistance\": 0,\n'), 'utf-8');
+    //VisualTransectPoints
+    writeVisualPoints(flightPath, header);
+    fs.appendFileSync('flight_path.plan', (header + '\t\"version\": 1\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '},\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\"angle\": 90,\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\"complexItemType\": \"survey\",\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\"entryLocation\": 0,\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\"flyAlternateTransects\": false,\n'), 'utf-8');
+    //polygon
+    fs.appendFileSync('flight_path.plan', (header + '\"polygon\": [\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t[\n'), 'utf-8');
+    //northwest
+    fs.appendFileSync('flight_path.plan', (header + '\t\t' + mapShape.getBounds().getNorthEast().lat() + ',\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\t' + mapShape.getBounds().getSouthWest().lng() + '\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t],\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t[\n'), 'utf-8');
+    //northeast
+    fs.appendFileSync('flight_path.plan', (header + '\t\t' + mapShape.getBounds().getNorthEast().lat() + ',\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\t' + mapShape.getBounds().getNorthEast().lng() + '\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t],\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t[\n'), 'utf-8');
+    //southeast
+    fs.appendFileSync('flight_path.plan', (header + '\t\t' + mapShape.getBounds().getSouthWest().lat() + ',\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\t' + mapShape.getBounds().getNorthEast().lng() + '\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t],\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t[\n'), 'utf-8');
+    //southwest
+    fs.appendFileSync('flight_path.plan', (header + '\t\t' + mapShape.getBounds().getSouthWest().lat() + ',\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t\t' + mapShape.getBounds().getSouthWest().lng() + '\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\t]\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '],\n'), 'utf-8');
+
+    fs.appendFileSync('flight_path.plan', (header + '\"splitConcavePolygons\": false,\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\"type\": \"ComplexItem\",\n'), 'utf-8');
+    fs.appendFileSync('flight_path.plan', (header + '\"version\": 5\n'), 'utf-8');
+    return doJumpId;
+}
+
+function writeItems(flightPath, header, doJumpId) {
+    let size = flightPath.length;
+    fs.appendFileSync('flight_path.plan', (header + '\t\"Items\": [\n'), 'utf-8');
+
+    for (let i = 0; i < size; i++) {
+        let lat = flightPath[i].getPath().getArray()[0].lat();
+        let lng = flightPath[i].getPath().getArray()[0].lng();
+        let parameters = ['0', '0', '0', 'null', lat, lng, '100'];
+        fs.appendFileSync('flight_path.plan', (header + '\t\t{\n'), 'utf-8');
+        doJumpId = writeSimpleItem(true, 16, doJumpId, 3, parameters, header + '\t\t');
+        fs.appendFileSync('flight_path.plan', (header + '\t\t},\n'), 'utf-8');
+        if (i == size - 1) {
+            lat = flightPath[i].getPath().getArray()[1].lat();
+            lng = flightPath[i].getPath().getArray()[1].lng();
+            let parameters = ['0', '0', '0', 'null', lat, lng, '100'];
+            fs.appendFileSync('flight_path.plan', (header + '\t\t{\n'), 'utf-8');
+            doJumpId = writeSimpleItem(true, 16, doJumpId, 3, parameters, header + '\t\t');
+            fs.appendFileSync('flight_path.plan', (header + '\t\t}\n'), 'utf-8');
+        }
+    }
+    fs.appendFileSync('flight_path.plan', (header + '\t],\n'), 'utf-8');
+    return doJumpId;
+}
+
+function writeVisualPoints(flightPath, header) {
+    let size = flightPath.length;
+    fs.appendFileSync('flight_path.plan', (header + '\t\"VisualTransectPoints\": [\n'), 'utf-8');
+    for (let i = 0; i < size; i++) {
+        fs.appendFileSync('flight_path.plan', (header + '\t\t[\n'), 'utf-8');
+        fs.appendFileSync('flight_path.plan', (header + '\t\t\t' + flightPath[i].getPath().getArray()[0].lat() + ',\n'), 'utf-8');
+        fs.appendFileSync('flight_path.plan', (header + '\t\t\t' + flightPath[i].getPath().getArray()[0].lng() + '\n'), 'utf-8');
+        fs.appendFileSync('flight_path.plan', (header + '\t\t],\n'), 'utf-8');
+        if (i == size - 1) {
+            fs.appendFileSync('flight_path.plan', (header + '\t\t[\n'), 'utf-8');
+            fs.appendFileSync('flight_path.plan', (header + '\t\t\t' + flightPath[i].getPath().getArray()[1].lat() + ',\n'), 'utf-8');
+            fs.appendFileSync('flight_path.plan', (header + '\t\t\t' + flightPath[i].getPath().getArray()[1].lng() + '\n'), 'utf-8');
+            fs.appendFileSync('flight_path.plan', (header + '\t\t]\n'), 'utf-8');
+        }
+    }
+    fs.appendFileSync('flight_path.plan', (header + '\t],\n'), 'utf-8');
 }
