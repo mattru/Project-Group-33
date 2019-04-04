@@ -118,7 +118,7 @@ function generate() {
     calculateHeatData(bearingArray, heatmapData, intersectionData); //(array of bearings,heatmap)
     if (intersectionData.length != 0) {
         averageData(intersectionData);
-        //medianData(intersectionData); expensive
+        medianData(intersectionData);
     }
 
     //debug:
@@ -278,32 +278,46 @@ function averageData(interArray) {
     avgMarker.setMap(loadMap);
 }
 
-function medianData(interArray) { //take median intersection point of dataset, O(n^2)
-    var lineSums = new Array(); //array containing sum of distances per point
-    var totalSum = 0; //total the sum of distances for a particular point i
-    //find sum of all distances per point
-    for (i = 0; i < interArray.length; i++) // i = point of interest
+function medianData(interArray) { //take median intersection point of dataset, O(nlogn)
+    //sorted intersection coordinates
+    var sortedX = mergeSort(interArray.map(a => a.x));
+    var sortedY = mergeSort(interArray.map(a => a.y));
+    var lSumX = []; var lSumY = [];//lefthand residual sum
+    var rSumX = []; var rSumY = [];//righthand residual sum
+    var totalSumX = []; var totalSumY = []; //residual sum of sorted array
+    lSumX[0] = 0; lSumY[0] = 0; rSumX[interArray.length - 1] = 0; rSumY[interArray.length - 1] = 0;
+    for (i = 1; i < interArray.length; i++) //lefthand sum for each point
     {
-        for (j = 0; j < interArray.length; j++) // j = 2nd point of triangle
-        {
-            if (i != j) {
-                totalSum = totalSum + pointDistance(interArray[i], interArray[j]);
-            }
-        }
-        lineSums.push({ point: i, sum: (totalSum) });
-        totalSum = 0;
+        lSumX[i] = (sortedX[i] - sortedX[i - 1]) * i;
+        lSumX[i] += lSumX[i - 1];
+        lSumY[i] = (sortedY[i] - sortedY[i - 1]) * i;
+        lSumY[i] += lSumY[i - 1];
+    };
+
+    for (i = interArray.length - 2; i >= 0; i--) //righthand sum for each point
+    {
+        rSumX[i] = (sortedX[i + 1] - sortedX[i]) * (interArray.length - (i + 1));
+        rSumX[i] += rSumX[i + 1];
+        rSumY[i] = (sortedY[i + 1] - sortedY[i]) * (interArray.length - (i + 1));
+        rSumY[i] += rSumY[i + 1];
+    };
+    for (i = 0; i < interArray.length; i++) {
+        totalSumX[i] = lSumX[i] + rSumX[i];
+        totalSumY[i] = lSumY[i] + rSumY[i];
     }
-    var min = lineSums[0].sum; //minimum sum of triangles
-    var minIndex = lineSums[0].point; //which point has the minimum triangle sum
-    for (i = 1; i < lineSums.length; i++) { //find point with minimum triangle sum
-        if (lineSums[i].sum < min) {
-            min = lineSums[i].sum;
-            minIndex = lineSums[i].point; //update to new point
+    var minCost = totalSumX[0] + totalSumY[0];
+    var minIter = 0;
+    for (i = 1; i < interArray.length; i++) {
+        cost = totalSumX[i] + totalSumY[i];
+        if (cost < minCost) {
+            minCost = totalSumX[i] + totalSumY[i];
+            minIter = i;
         }
     }
 
-    var medianIntersection = new google.maps.LatLng(interArray[minIndex].y, interArray[minIndex].x);
+    var medianIntersection = new google.maps.LatLng(sortedY[minIter], sortedX[minIter]);
     //initialize median point display
+    console.log(sortedX[minIter]);
     var medMarker = new google.maps.Marker({
         position: medianIntersection,
         title: "Median Location"
@@ -311,7 +325,43 @@ function medianData(interArray) { //take median intersection point of dataset, O
     medMarker.setMap(loadMap);
 }
 
-//credits to Paul Bourke for intersection point algorithm
+// credits to Alexander Kondov for mergesort algorithm function
+function mergeSort(arr) {
+    if (arr.length === 1) {
+        // return once we hit an array with a single item
+        return arr
+    }
+
+    const middle = Math.floor(arr.length / 2) // get the middle item of the array rounded down
+    const left = arr.slice(0, middle) // items on the left side
+    const right = arr.slice(middle) // items on the right side
+
+    return merge(
+        mergeSort(left),
+        mergeSort(right)
+    )
+}
+
+// compare the arrays item by item and return the concatenated result
+function merge(left, right) {
+    let result = []
+    let indexLeft = 0
+    let indexRight = 0
+
+    while (indexLeft < left.length && indexRight < right.length) {
+        if (left[indexLeft] < right[indexRight]) {
+            result.push(left[indexLeft])
+            indexLeft++
+        } else {
+            result.push(right[indexRight])
+            indexRight++
+        }
+    }
+
+    return result.concat(left.slice(indexLeft)).concat(right.slice(indexRight))
+}
+
+//credits to Paul Bourke for intersection point algorithm function
 //line intercept math by Paul Bourke http://paulbourke.net/geometry/pointlineplane/
 //Determine the intersection point of two line segments
 //Returns false if the lines don't intersect
@@ -347,23 +397,8 @@ function distance(intersectA, bearA) {
     return Math.sqrt(a * a + b * b);
 }
 
-function pointDistance(intersectA, intersectB) {
-    var a = intersectA.x - intersectB.x; //a = x1 - x2;
-    var b = intersectA.y - intersectB.y; //b = y1 - y2;
-    return Math.sqrt(a * a + b * b);
-}
 
 //filler*****************************
-function convertData() { //convert html to array
-    $("table#cartGrid tr").each(function () { //myTableArray[1][3] // Fourth td of the second tablerow
-        var arrayOfThisRow = [];
-        var tableData = $(this).find('td');
-        if (tableData.length > 0) {
-            tableData.each(function () { arrayOfThisRow.push($(this).text()); });
-            tableDataArray.push(arrayOfThisRow);
-        }
-    });
-}
 
 function testAddToArraysAbs(poly, bear, lat, lng, abs) { //add datapoints to position and bearing arrays from absolute bearing (degrees from unit circle)
     poly.push(new google.maps.LatLng(lat, lng)); //general path
