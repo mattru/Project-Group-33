@@ -4,6 +4,7 @@ var map;
 var drawingManager;
 var selectedShape = null;
 var mapShape = null;
+var shapeDiff = null;
 var prevZoom = 0;
 var flightMap = new Map;
 var testMarker = null;
@@ -88,8 +89,10 @@ function initMap() {
 
         if ((prevZoom == 16 && map.getZoom() == 15)
             || (prevZoom == 15 && map.getZoom() == 16)) {
-                unsetFlightPath(prevZoom);
-                generateFlightPath(zoom, map)
+                diff = calcIterAmount(prevZoom);
+                unsetFlightPath(diff);
+                shapeDiff = calcIterAmount(map.getZoom());
+                generateFlightPath(zoom, map);
         }
 
         prevZoom = zoom;
@@ -129,12 +132,23 @@ function completePolygon(event) {
     google.maps.event.addListener(newShape, 'click', function() {
         setSelection(newShape);
     });
-    google.maps.event.addListener(newShape, 'dragend', function() {
-        recalculateFlightPath(map.getZoom())
+    // google.maps.event.addListener(newShape, 'dragend', function() {
+    //     unsetFlightPath(map.getZoom());
+    //     flightMap.clear();
+    //     generateFlightPath(map.getZoom(), map);
+    // });
+    google.maps.event.addListener(newShape, 'bounds_changed', function() {
+        console.log("bound changed");
+        unsetFlightPath(shapeDiff, function() {
+            shapeDiff = calcIterAmount(map.getZoom());
+            flightMap.clear();
+            generateFlightPath(map.getZoom(), map);
+        });
     });
 
-    selectedShape = newShape;
     mapShape = newShape;
+    selectedShape = newShape;
+    shapeDiff = calcIterAmount(map.getZoom());
     generateFlightPath(map.getZoom(), map);
 };
 
@@ -160,19 +174,19 @@ function clearSelection() {
 function deletePrevShape() {
     if (mapShape) {
         mapShape.setMap(null);
-        unsetFlightPath(map.getZoom());
+        diff = calcIterAmount(map.getZoom());
+        unsetFlightPath(diff);
     }
     flightMap.clear();
 }
 
 // unsetFlightPath clears a flightPath from the map
 // so it is no longer visible
-function unsetFlightPath(zoom) {
+function unsetFlightPath(diff, callback) {
     if (testMarker) {
         testMarker.setMap(null);
     }
 
-    diff = calcIterAmount(zoom)
     let flightPath = flightMap.get(diff)
     if (flightPath == undefined) {
         console.log("flight path not found")
@@ -180,6 +194,10 @@ function unsetFlightPath(zoom) {
     }
     for (let i = 0; i < flightPath.length ; i++) {
         flightPath[i].setMap(null);
+    }
+
+    if (callback != null) {
+        callback();
     }
 }
 
