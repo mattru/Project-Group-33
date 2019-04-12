@@ -2,7 +2,10 @@ This is a link to an image of the Raspberry Pi used on the hex copter.
 
 https://oregonstate.box.com/s/evw342z2mwsdawztg2qa76qyr2fsm83k
 
+
 The image can be written to a 32GB SD card using Win32Imager, which was used to create the image.
+
+Navigate to /etc/rc.local and uncomment the two lines, then reboot. This will start the logging on start up.
 
 The Raspberry Pi starts logging GPS data and scanning using the rtlsdr receiver around 2 minutes after boot up.
 A USB drive will need to be attached to have the data logged to it. The Pi is set to auto mount the USB drive.
