@@ -98,7 +98,7 @@ function initMap() {
                 diff = calcIterAmount(prevZoom);
                 unsetFlightPath(diff);
                 shapeDiff = calcIterAmount(map.getZoom());
-                generateFlightPath(zoom, map)
+                generateFlightPath(zoom, map);
         }
 
         prevZoom = zoom;
