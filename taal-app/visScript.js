@@ -1,24 +1,14 @@
-function convertLineIntoArray(pathArray) {
-    var tempArray = new Array();
-    for (i = 0; i < pathArray.length; i++) {
-        tempArray.push({ lat: pathArray[i].latLngs.j[0].j[0].lat, lng: pathArray[i].latLngs.j[0].j[0].lng });
-    }
-    return tempArray;
-}
+//To Do: Add html error messages if not all files are added or aren't .csv files
+//****** Fix median function... guess: lat lng coordinates different than cartesian coordinate system */
 
+var dataArray1 = new Array(); var dataArray2 = new Array(); var dataArray3 = new Array(); //data arrays for storing imported intensity,lat,lng
 var freqArray = new Array(); //filler for different frequencies each with their own dataArray + frequency number
-var dataArray = convertLineIntoArray(path); //imported data array
+//var dataArray = convertLineIntoArray(path); //imported test flightpath data
 var map; var mapCenter = { lat: 44.5646, lng: -123.2620 }; var mapZoom = 14; var mapType;
-var swapNum = 0;
-var tLines = 1; var tOpacity = 1; var tRadius = 1;
-//function initFreqArray(arrayNumber){ //****** clarification with team ******/
-//already done?
-//}
+var typeFlag = 0; var max1 = 0;
+var tLines = 1; var tOpacity = 1; var tRadius = 1; var lineLength = 0.5;
 
 function toggleLines() {
-    mapCenter = loadMap.getCenter();
-    mapZoom = loadMap.getZoom();
-    mapType = loadMap.getMapTypeId();
     tLines++;
     if (tLines > 1) {
         tLines = 0;
@@ -27,9 +17,6 @@ function toggleLines() {
 }
 
 function toggleOpacity() {
-    mapCenter = loadMap.getCenter();
-    mapZoom = loadMap.getZoom();
-    mapType = loadMap.getMapTypeId();
     tOpacity++;
     if (tOpacity > 1) {
         tOpacity = 0;
@@ -38,9 +25,6 @@ function toggleOpacity() {
 }
 
 function changeRadius() {
-    mapCenter = loadMap.getCenter();
-    mapZoom = loadMap.getZoom();
-    mapType = loadMap.getMapTypeId();
     tRadius++;
     if (tRadius >= 4) {
         tRadius = 1;
@@ -48,20 +32,160 @@ function changeRadius() {
     generate();
 }
 
-function toggleMap() {
+
+function begin1() { //single file upload
+    typeFlag = 0;
+    dataArray1 = []; dataArray2 = []; dataArray3 = []; max1 = 0; //clear previous global values
+    var file = document.getElementById('u1').files[0];
+
+    var reader = new FileReader();
+    reader.onload = function (progressEvent) {
+        // Entire file
+        //console.log(this.result);
+        // By lines
+        var allTextLines = this.result.split('\n');
+        var lines = [];
+        for (var i = 0; i < allTextLines.length; i++) {
+            var data = allTextLines[i].split(';');
+            var tarr = [];
+            for (var j = 0; j < data.length; j++) {
+                tarr.push(data[j]);
+            }
+            lines.push(tarr);
+        }
+        //console.log((lines[1].toString()).split(',')[2]); //second row, third column
+        //find frequency specific intensity while finding local minimum intensity
+        var localMin = 0;
+        for (var i = 1; i < lines.length; i++) {
+            if ((lines[i].toString()).split(',')[1] == 150.671875) {
+                dataArray1.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
+                if (dataArray1.length == 1) //find minimum
+                    localMin = dataArray1[0].intensity;
+                localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
+            }
+        }
+        for (var i = 0; i < dataArray1.length; i++) { //convert into intensity
+            max1 = dataArray1[i].intensity + Math.abs(localMin);
+            dataArray1[i].intensity = max1;
+        }
+        generate();
+    };
+    reader.readAsText(file);
+}
+
+function begin3() { //three file upload
+    typeFlag = 1;
+    dataArray1 = []; dataArray2 = []; dataArray3 = [];
+    var file1 = document.getElementById('u2').files[0];
+    var file2 = document.getElementById('u3').files[0];
+    var file3 = document.getElementById('u4').files[0];
+
+    var reader1 = new FileReader(); var reader2 = new FileReader(); var reader3 = new FileReader();
+    reader1.onload = function (progressEvent) {
+        // Entire file
+        //console.log(this.result);
+        // By lines
+        var allTextLines = this.result.split('\n');
+        var lines = [];
+        for (var i = 0; i < allTextLines.length; i++) {
+            var data = allTextLines[i].split(';');
+            var tarr = [];
+            for (var j = 0; j < data.length; j++) {
+                tarr.push(data[j]);
+            }
+            lines.push(tarr);
+        }
+        //console.log((lines[1].toString()).split(',')[2]); //second row, third column
+        //find frequency specific intensity while finding local minimum intensity
+        var localMin = 0;
+        for (var i = 1; i < lines.length; i++) {
+            if ((lines[i].toString()).split(',')[1] == 150.671875) {
+                dataArray1.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
+                if (dataArray1.length == 1) //find minimum
+                    localMin = dataArray1[0].intensity;
+                localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
+            }
+        }
+        for (var i = 0; i < dataArray1.length; i++) //convert into intensity
+            dataArray1[i].intensity = dataArray1[i].intensity + Math.abs(localMin);
+    };
+
+    reader2.onload = function (progressEvent) {
+        // Entire file
+        //console.log(this.result);
+        // By lines
+        var allTextLines = this.result.split('\n');
+        var lines = [];
+        for (var i = 0; i < allTextLines.length; i++) {
+            var data = allTextLines[i].split(';');
+            var tarr = [];
+            for (var j = 0; j < data.length; j++) {
+                tarr.push(data[j]);
+            }
+            lines.push(tarr);
+        }
+        //console.log((lines[1].toString()).split(',')[2]); //second row, third column
+        //find frequency specific intensity while finding local minimum intensity
+        var localMin = 0;
+        for (var i = 1; i < lines.length; i++) {
+            if ((lines[i].toString()).split(',')[1] == 150.671875) {
+                dataArray2.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
+                if (dataArray2.length == 1) //find minimum
+                    localMin = dataArray2[0].intensity;
+                localMin = Math.min(dataArray2[dataArray2.length - 1].intensity, localMin);
+            }
+        }
+        for (var i = 0; i < dataArray2.length; i++) //convert into intensity
+            dataArray2[i].intensity = dataArray2[i].intensity + Math.abs(localMin);
+    };
+
+    reader3.onload = function (progressEvent) {
+        // Entire file
+        //console.log(this.result);
+        // By lines
+        var allTextLines = this.result.split('\n');
+        var lines = [];
+        for (var i = 0; i < allTextLines.length; i++) {
+            var data = allTextLines[i].split(';');
+            var tarr = [];
+            for (var j = 0; j < data.length; j++) {
+                tarr.push(data[j]);
+            }
+            lines.push(tarr);
+        }
+        //console.log((lines[1].toString()).split(',')[2]); //second row, third column
+        //find frequency specific intensity while finding local minimum intensity
+        var localMin = 0;
+        for (var i = 1; i < lines.length; i++) {
+            if ((lines[i].toString()).split(',')[1] == 150.671875) {
+                dataArray3.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
+                if (dataArray3.length == 1) //find minimum
+                    localMin = dataArray3[0].intensity;
+                localMin = Math.min(dataArray3[dataArray3.length - 1].intensity, localMin);
+            }
+        }
+        for (var i = 0; i < dataArray3.length; i++) //convert into intensity
+            dataArray3[i].intensity = dataArray3[i].intensity + Math.abs(localMin);
+        generate();
+    };
+
+    reader1.readAsText(file1);
+    reader2.readAsText(file2);
+    reader3.readAsText(file3);
+}
+
+//*************** BEGIN ****************/
+function initMap() { //do nothing
+    loadMap = new google.maps.Map(document.getElementById('map'), {
+        center: mapCenter,
+        zoom: mapZoom,
+        mapTypeId: mapType
+    });
+}
+function generate() {
     mapCenter = loadMap.getCenter();
     mapZoom = loadMap.getZoom();
     mapType = loadMap.getMapTypeId();
-    swapNum++;
-    if (swapNum >= 1) {
-        swapNum = 0;
-    }
-    generate();
-}
-function initMap() { //default map is first in freqArray
-    generate();
-}
-function generate() {
     loadMap = new google.maps.Map(document.getElementById('map'), {
         center: mapCenter,
         zoom: mapZoom,
@@ -71,42 +195,32 @@ function generate() {
     var heatmapData = new Array(); //array of heatmap data, may be removed in future
     var bearingArray = new Array(); //array of bearing lines starting from second datapoint taken
     var intersectionData = new Array(); //array of intersection points
-    //******To do: 
-    //*****         add data import function
-    //*****         add function to manage multiple frequencies' data (may need to encapsulate current data arrays into function)
-    //*****         fix zooming and heatmap issue
-    //*****         add customization options to show/hide each feature
-    //*****         add frequency swap button to html
 
     //actual values
-    /*for (i = 0; i < dataArray.length; i++)
+    if (typeFlag == 0) //single receiver
     {
-      addToArrays(polymapData,bearingArray,dataArray[i].lat,dataArray[i].lng,dataArray[i].bearF,dataArray[i].bearR,dataArray[i].bearL);
-    }*/
-
-    //import data values: (n items)
-    //temporary testing values
-    /*if (swapNum == 1)
-    {
-      addToArrays(polymapData,bearingArray,44.572,-123.237,0,0,0); //(polymap output, bearing output, lat, lng, frontIntensity,backRInt,backLInt)
-      addToArrays(polymapData,bearingArray,44.582,-123.257,0,0,2); 
-      addToArrays(polymapData,bearingArray,44.592,-123.227,0,300,0);
-      addToArrays(polymapData,bearingArray,44.542,-123.257,0,0,300);
-      addToArrays(polymapData,bearingArray,44.532,-123.257,0,0,300);
+        for (i = 0; i < dataArray1.length; i++) {
+            singleArrayConversion(polymapData, heatmapData, dataArray1[i].lat, dataArray1[i].lng, dataArray1[i].intensity);
+        }
     }
-    else
+    else //three receivers
     {
-      addToArrays(polymapData,bearingArray,44.552,-123.217,0,0,0); //(polymap output, bearing output, lat, lng, frontIntensity,backRInt,backLInt)
-      addToArrays(polymapData,bearingArray,44.532,-123.217,0,0,2); 
-      addToArrays(polymapData,bearingArray,44.512,-123.227,0,300,0);
-      addToArrays(polymapData,bearingArray,44.522,-123.347,0,0,300);
-      addToArrays(polymapData,bearingArray,44.532,-123.257,0,0,300);
-    }*/
+        for (i = 0; i < dataArray1.length; i++) //!!!!!!!!!!!need to change if data of each file vaires in length!!!!!!!!!!
+        {
+            addToArrays(polymapData, bearingArray, dataArray1[i].lat, dataArray1[i].lng, dataArray1[i].intensity, dataArray2[i].intensity, dataArray3[i].intensity);
+        }
 
-    //Actual
-    for (i = 0; i < dataArray.length; i++) {
+        calculateHeatData(bearingArray, heatmapData, intersectionData); //(array of bearings,heatmap)
+        if (intersectionData.length != 0) {
+            averageData(intersectionData);
+            //medianData(intersectionData);
+        }
+    }
+
+    //test flightpath
+    /*for (i = 0; i < dataArray.length; i++) {
         testAddToArrays(polymapData, bearingArray, dataArray[i].lat, dataArray[i].lng);
-    }
+    }*/
 
     //debug:
     /*testAddToArraysAbs(polymapData,bearingArray,44.572,-123.237,90);
@@ -114,12 +228,8 @@ function generate() {
     testAddToArraysAbs(polymapData,bearingArray,44.592,-123.227,120);
     testAddToArraysAbs(polymapData,bearingArray,44.602,-123.227,180);*/
 
-    //data processing to triangulation:
-    calculateHeatData(bearingArray, heatmapData, intersectionData); //(array of bearings,heatmap)
-    if (intersectionData.length != 0) {
-        averageData(intersectionData);
-        medianData(intersectionData);
-    }
+    //data processing to triangulation for three receivers:
+
 
     //debug:
     //console.log(findAbsoluteBearing(0,1,1,polymapData[0],polymapData[1])); //(front, backright, backleft, previousPt, currentPt)
@@ -159,16 +269,22 @@ function generate() {
     map = loadMap; //initialize first map
 }
 
-function addToArrays(poly, bear, lat, lng, frontF, backRF, backLF) { //add datapoints to position and bearing arrays
+function singleArrayConversion(poly, heat, lat, lng, intensity) { //add datapoints for single receiver
+    poly.push(new google.maps.LatLng(lat, lng));
+    var scaledIntensity = intensity + 0.001 / max1;//intensity proportional to dataset intensity (0 - 1 scale)
+    heat.push({ location: new google.maps.LatLng(lat, lng), weight: scaledIntensity });
+}
+
+function addToArrays(poly, bear, lat, lng, frontF, backRF, backLF) { //add datapoints to position and bearing arrays for three receivers
     poly.push(new google.maps.LatLng(lat, lng)); //general path
 
     if (poly.length > 1) //generate bearing line from datapoint + previous datapoint
     {
         //!!!!!!Improvement: change lineLength to be calculated from receiver intensity instead of constant!!!!!!!!
-        var lineLength = 0.1; //~~~~~constant to control length of bearing line, higher values = more error due to spherical earth~~~~~~
+        //var lineLength = 0.5; //~~~~~constant to control length of bearing line, higher values = more error due to spherical earth~~~~~~
         var absAngle = findAbsoluteBearing(frontF, backRF, backLF, poly[poly.length - 2], poly[poly.length - 1]); //radians
 
-        //Find Bearing Line
+        //Find Bearing Line, !!!!!!!!!!!!may need incorporate exclusion if all three intensities are the same!!!!!!!!!!!!
         var bLat = lat + lineLength * Math.sin(absAngle); //y
         var bLng = lng + lineLength * Math.cos(absAngle); //x
         bear.push({ x1: lng, y1: lat, x2: bLng, y2: bLat }); //add bearing line to array of bearing lines for intersection calculation later
@@ -250,7 +366,7 @@ function calculateHeatData(bearA, heat, interData) { //find all intersections be
             var intersect = line_intersect(bearA[i].x1, bearA[i].y1, bearA[i].x2, bearA[i].y2,
                 bearA[j].x1, bearA[j].y1, bearA[j].x2, bearA[j].y2);
             if (intersect != false) {
-                var impact = Math.min(distance(intersect, bearA[i]), distance(intersect, bearA[j])); //find line with minimum distance from intersection
+                var impact = lineLength / Math.min(distance(intersect, bearA[i]), distance(intersect, bearA[j])); //find line with minimum distance from intersection
                 heat.push({ location: new google.maps.LatLng(intersect.y, intersect.x), weight: 0.5 }); //!!!may need to calibrate weight to number of points!!!
                 interData.push({ y: intersect.y, x: intersect.x, weight: impact });
             }
@@ -317,7 +433,7 @@ function medianData(interArray) { //take median intersection point of dataset, O
 
     var medianIntersection = new google.maps.LatLng(sortedY[minIter], sortedX[minIter]);
     //initialize median point display
-    console.log(sortedX[minIter]);
+    //console.log(sortedX[minIter]);
     var medMarker = new google.maps.Marker({
         position: medianIntersection,
         title: "Median Location"
@@ -400,13 +516,13 @@ function distance(intersectA, bearA) {
 
 //filler*****************************
 
-function testAddToArraysAbs(poly, bear, lat, lng, abs) { //add datapoints to position and bearing arrays from absolute bearing (degrees from unit circle)
+function testAddToArraysAbs(poly, bear, lat, lng, abs) { //add datapoints to position and bearing arrays from absolute bearing (degrees from unit circle), used for test flightpath only
     poly.push(new google.maps.LatLng(lat, lng)); //general path
 
     if (poly.length > 1) //generate bearing line from datapoint + previous datapoint
     {
         //!!!!!!Improvement: change lineLength to be calculated from receiver intensity instead of constant!!!!!!!!
-        var lineLength = 0.1; //~~~~~constant to control length of bearing line, higher values = more error due to spherical earth~~~~~~
+        //var lineLength = 0.1; //~~~~~constant to control length of bearing line, higher values = more error due to spherical earth~~~~~~
         var absAngle = abs * Math.PI / 180; //radians
 
         //Find Bearing Line
@@ -465,18 +581,18 @@ function testAddToArraysAbs(poly, bear, lat, lng, abs) { //add datapoints to pos
     }
 }
 
-function testFindAbsoluteBearing(prevPointLat, prevPointLng, curPoint) {
+function testFindAbsoluteBearing(prevPointLat, prevPointLng, curPoint) { //for test flightpath only
     var absoluteDirection = Math.atan2((curPoint.latLngs.j[0].j[0].lat - prevPointLat), (curPoint.latLngs.j[0].j[0].lng - prevPointLng));
     return absoluteDirection; //radians
 };
 
-function testAddToArrays(poly, bear, lat, lng) { //add datapoints to position and bearing arrays
+function testAddToArrays(poly, bear, lat, lng) { //add datapoints to position and bearing arrays for test flightpath only
     poly.push(new google.maps.LatLng(lat, lng)); //general path
 
     if (poly.length > 1) //generate bearing line from datapoint + previous datapoint
     {
         //!!!!!!Improvement: change lineLength to be calculated from receiver intensity instead of constant!!!!!!!!
-        var lineLength = 0.01; //~~~~~constant to control length of bearing line, higher values = more error due to spherical earth~~~~~~
+        //var lineLength = 0.01; //~~~~~constant to control length of bearing line, higher values = more error due to spherical earth~~~~~~
         var absAngle = testFindAbsoluteBearing(lat, lng, middlePoint); //radians
 
         //Find Bearing Line
@@ -535,3 +651,10 @@ function testAddToArrays(poly, bear, lat, lng) { //add datapoints to position an
     }
 }
 
+function convertLineIntoArray(pathArray) { //just for test flightpath data
+    var tempArray = new Array();
+    for (i = 0; i < pathArray.length; i++) {
+        tempArray.push({ lat: pathArray[i].latLngs.j[0].j[0].lat, lng: pathArray[i].latLngs.j[0].j[0].lng });
+    }
+    return tempArray;
+}
