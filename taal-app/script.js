@@ -29,22 +29,6 @@ document.getElementById("rectangle-button").addEventListener("click", function()
     drawingManager.setMap(map);
 });
 
-document.getElementById("circle-button").addEventListener("click", function() {
-
-    deletePrevShape();
-
-    drawingManager.setOptions({
-        drawingMode : google.maps.drawing.OverlayType.CIRCLE,
-        drawingControl : true,
-        drawingControlOptions : {
-            position : google.maps.ControlPosition.TOP_CENTER,
-            drawingModes : [ google.maps.drawing.OverlayType.CIRCLE ]
-        }
-    });
-
-    drawingManager.setMap(map);
-});
-
 document.getElementById("download-flight").addEventListener("click", function() {
     flightPath = flightMap.get(flightDiffAmount);
     if (flightPath == undefined) {
