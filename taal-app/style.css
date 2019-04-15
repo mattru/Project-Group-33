@@ -26,7 +26,7 @@ img {
 
 .map-button-container {
     margin-top: 15px;
-    height: 35px;
+    height: 45px;
     width: 100%;
 }
 
@@ -51,6 +51,9 @@ img {
 .map-button-container :hover {
     background-color: rgb(41, 41, 41);
     cursor: pointer;
+}
+.float-left{
+    float: left;
 }
 
 .main-sidebar {

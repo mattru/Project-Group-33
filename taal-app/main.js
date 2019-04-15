@@ -10,7 +10,7 @@ function createWindow () {
   mainWindow = new BrowserWindow({width: 1280, height: 720})
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('flightPlanner.html')
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

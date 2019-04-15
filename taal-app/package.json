@@ -7,11 +7,10 @@
     "start": "electron ."
   },
   "repository": "https://github.com/mattru/Project-Group-33",
-  "keywords": [
-  ],
+  "keywords": [],
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^4.0.1"
+    "electron": "^4.1.4"
   }
 }
