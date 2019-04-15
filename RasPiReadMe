@@ -7,10 +7,11 @@ log in info: username: pi, password: Logg3r
 The image can be written to a 32GB SD card using Win32Imager, which was used to create the image.
 
 Navigate to /etc/rc.local and uncomment the two lines near the bottom (if not already),
-then reboot. This will start the logging on start up. 
+then reboot. Those lines will start the logging on start up. 
+Another file to look at is scan.sh in /etc/.
 
 The Raspberry Pi starts logging GPS data and scanning using the rtlsdr receiver around 2 minutes after boot up.
-A USB drive will need to be attached to have the data logged to it. The Pi is set to auto mount the USB drive.
+A USB drive will need to be attached to have the data logged to it. The Pi is set to auto mount my USB drive. This may be an issue, to see the data you may need to change where the scripts store the data.
 The GPS data comes from a USB GPS device that will be plugged in. I am not sure if any USB GPS will work or if it is setup specifically for the one I have.
 But it is based on the uBlox M7 or M8 gps chip.
 
