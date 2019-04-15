@@ -23,7 +23,7 @@
     <input id="tabBTN" type="button" value="Home" onclick="window.location = './index.html'" />
 
     <div id="floating-panel">
-      <button onclick="toggleLines()">Toggle Bearing Lines</button>
+      <button id="tline" style="display: none" onclick="toggleLines()">Toggle Bearing Lines</button>
       <button onclick="toggleOpacity()">Toggle Heatmap Opacity</button>
       <button onclick="changeRadius()">Change Heatmap Radius</button>
       Select Configuration Type:
@@ -54,13 +54,16 @@
         function changeForm(flag) {
           var x = document.getElementById("1-set");
           var y = document.getElementById("3-set");
+          var z = document.getElementById("tline");
           if (flag) {
             x.style.display = "none";
             y.style.display = "block";
+            z.style.display = "none"
           }
           else {
             x.style.display = "block";
             y.style.display = "none";
+            z.style.display = "block";
           }
         } 
       </script>

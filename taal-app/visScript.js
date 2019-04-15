@@ -202,6 +202,7 @@ function generate() {
         for (i = 0; i < dataArray1.length; i++) {
             singleArrayConversion(polymapData, heatmapData, dataArray1[i].lat, dataArray1[i].lng, dataArray1[i].intensity);
         }
+        averageData(dataArray1);
     }
     else //three receivers
     {
@@ -368,24 +369,24 @@ function calculateHeatData(bearA, heat, interData) { //find all intersections be
             if (intersect != false) {
                 var impact = lineLength / Math.min(distance(intersect, bearA[i]), distance(intersect, bearA[j])); //find line with minimum distance from intersection
                 heat.push({ location: new google.maps.LatLng(intersect.y, intersect.x), weight: 0.5 }); //!!!may need to calibrate weight to number of points!!!
-                interData.push({ y: intersect.y, x: intersect.x, weight: impact });
+                interData.push({ lat: intersect.y, lng: intersect.x, intensity: impact });
             }
         }
     }
 }
 
-//find the weighted average of intersection data and plot it
+//find the weighted average of intersection data and plot it, or regular receiver data
 function averageData(interArray) {
     var xNumer = 0; //mw :weighted average of x where summation(mw/w)
     var yNumer = 0; //weighted average of y
     var denom = 0; //w
     for (i = 0; i < interArray.length; i++) {
-        xNumer = xNumer + interArray[i].weight * interArray[i].x;
-        yNumer = yNumer + interArray[i].weight * interArray[i].y;
-        denom = denom + interArray[i].weight;
+        xNumer = xNumer + interArray[i].intensity * interArray[i].lng;
+        yNumer = yNumer + interArray[i].intensity * interArray[i].lat;
+        denom = denom + interArray[i].intensity;
     }
     var averageIntersection = new google.maps.LatLng(yNumer / denom, xNumer / denom); //data point of where average intersection is displayed
-    //console.log(interArray[1].weight);
+    //console.log(interArray[1].intensity);
     //initialize average point display
     var avgMarker = new google.maps.Marker({
         position: averageIntersection,
@@ -396,8 +397,8 @@ function averageData(interArray) {
 
 function medianData(interArray) { //take median intersection point of dataset, O(nlogn)
     //sorted intersection coordinates
-    var sortedX = mergeSort(interArray.map(a => a.x));
-    var sortedY = mergeSort(interArray.map(a => a.y));
+    var sortedX = mergeSort(interArray.map(a => a.lng));
+    var sortedY = mergeSort(interArray.map(a => a.lat));
     var lSumX = []; var lSumY = [];//lefthand residual sum
     var rSumX = []; var rSumY = [];//righthand residual sum
     var totalSumX = []; var totalSumY = []; //residual sum of sorted array
