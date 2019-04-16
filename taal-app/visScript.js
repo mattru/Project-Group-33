@@ -7,7 +7,7 @@ if (sync != null) {
     console.log(syncDATA);
 }*/
 
-sync = JSON.parse(sessionStorage.getItem('syncDATA'));
+var sync = JSON.parse(sessionStorage.getItem('syncDATA'));
 // if (gps != null && sdr != null && sync != null) {
 //var syncDATA = new Array();
 if (sync != null) {
@@ -53,23 +53,29 @@ function changeRadius() { //heatmap radius scaling
 }
 
 function localBegin() { //use local data
-    typeFlag = 0;
-    dataArray1 = []; dataArray2 = []; dataArray3 = []; max1 = 0; //clear previous global values
-    for (var i = 1; i < syncDATA.length; i++) {
-            dataArray1.push({ intensity: parseFloat(syncDATA[i][2]), lat: parseFloat(syncDATA[i][3]), lng: parseFloat(syncDATA[i][4])});
-            if (dataArray1.length == 1) //find minimum
-                localMin = dataArray1[0].intensity;
-            localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
-        }
-    if (dataArray1.length == 0) //find minimum
-        return console.log("Error, length of file is 0");
-    var temp = 0;
-    for (var i = 0; i < dataArray1.length; i++) { //convert into intensity
-        temp = dataArray1[i].intensity + Math.abs(localMin);
-        max1 = Math.max(max1,temp);
-        dataArray1[i].intensity = temp;
+
+    if(sync != null) {
+      typeFlag = 0;
+      dataArray1 = []; dataArray2 = []; dataArray3 = []; max1 = 0; //clear previous global values
+      for (var i = 1; i < syncDATA.length; i++) {
+              dataArray1.push({ intensity: parseFloat(syncDATA[i][2]), lat: parseFloat(syncDATA[i][3]), lng: parseFloat(syncDATA[i][4])});
+              if (dataArray1.length == 1) //find minimum
+                  localMin = dataArray1[0].intensity;
+              localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
+          }
+      if (dataArray1.length == 0) //find minimum
+          return console.log("Error, length of file is 0");
+      var temp = 0;
+      for (var i = 0; i < dataArray1.length; i++) { //convert into intensity
+          temp = dataArray1[i].intensity + Math.abs(localMin);
+          max1 = Math.max(max1,temp);
+          dataArray1[i].intensity = temp;
+      }
+      generate();
     }
-    generate();
+    else {
+        alert("No Stored Data");
+    }
 }
 
 function begin1() { //single file upload
@@ -281,7 +287,7 @@ function generate() {
         {
             addToArrays(polymapData, bearingArray, dataArray1[i].lat, dataArray1[i].lng, dataArray1[i].intensity, dataArray2[i].intensity, dataArray3[i].intensity);
         }
-        
+
         calculateHeatData(bearingArray, heatmapData, intersectionData); //(array of bearings,heatmap)
         if (intersectionData.length > 0) {
             averageData(intersectionData);
@@ -304,7 +310,7 @@ function generate() {
 
     //initialize heatmap overlay
     heatmap.setData(heatmapData);
-    
+
     var radiusSize = tRadius * 50;
     if (tOpacity == 1)
     {
@@ -343,7 +349,7 @@ function addToArrays(poly, bear, lat, lng, frontF, backRF, backLF) { //add datap
         var bLat = lat + lineLength * Math.sin(absAngle); //y
         var bLng = lng + lineLength * Math.cos(absAngle); //x
         bear.push({ x1: lng, y1: lat, x2: bLng, y2: bLat }); //add bearing line to array of bearing lines for intersection calculation later
-        
+
         if (tLines == 1)
         {
             //Form bearing line
@@ -408,7 +414,7 @@ function findAbsoluteBearing(frontF, backRF, backLF, prevPoint, curPoint) { //fl
     var backRAngle = 240 * Math.PI / 180; //         / \
     var backLAngle = 120 * Math.PI / 180; //        L---R
 
-    //will need a way to deal with bearing when drone is above transmitter 
+    //will need a way to deal with bearing when drone is above transmitter
     var relativeBearing = Math.atan2((frontF * Math.sin(frontAngle) + backRF * Math.sin(backRAngle) + backLF * Math.sin(backLAngle)), (frontF * Math.cos(frontAngle) + backRF * Math.cos(backRAngle) + backLF * Math.cos(backLAngle)));
     var absoluteDirection = Math.atan2((curPoint.lat() - prevPoint.lat()), (curPoint.lng() - prevPoint.lng()));
 

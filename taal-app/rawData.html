@@ -17,6 +17,9 @@
             <input id="tabBTN" type="button" value="Data" onclick="window.location = './rawData.html'" />
 
             <input id="tabBTN" type="button" value="Track" onclick="window.location = './processedData.html'" />
+
+
+            <input type="button" value="Clear Storage" onclick="clearStorage()" />
           </div>
       </div>
 
@@ -43,27 +46,14 @@
                       <button onclick="sync()"> SYNC</button>
                     </div>
 
-                    <a href='#' onclick='downloadCSV({ filename: "stock-data.csv" });'>Download CSV</a>
-                    <!-- <button href='#' onclick='downloadCSV({ filename: "stock-data.csv" });'>Export combined File</button> -->
+                    <!-- <a href='#' onclick='downloadCSV({ filename: "stock-data.csv" });'>Download CSV</a> -->
+                    <button href='#' onclick='downloadCSV({ filename: "stock-data.csv" });'>Export combined File</button>
 
-                    <!-- <button onclick="window.location = './processedData.html'">Visualize</button> -->
-                    <button id="hiddenElement" style="display: none;" type="button" value="Visualize" onclick="window.location = './processedData.html'" >Visualize</button>
+                    <button id="hiddenElement" style="display: none;" type="button" value="Visualize" onclick="window.location = './processedData.html'" >Visualize Data</button>
 
                 </fieldset>
-
-
-                <!-- <script type="text/javascript">
-                  function reload() {
-                    gpsDATA = JSON.parse(localStorage.getItem('gpsDATA'));
-                    sdrDATA = JSON.parse(localStorage.getItem('sdrDATA'));
-                    if (gpsDATA != null && sdrDATA != null) { sync(); }
-                  }
-                  window.onload = reload;
-                </script> -->
-
               </form>
           </div>
-
 
           <table id="myTable">
             <tr>
@@ -113,6 +103,20 @@ function reload() {
 }
 window.onload = reload;
 
+function clearStorage() {
+
+  sessionStorage.clear();
+
+  sdrDATA = [];
+  gpsDATA = [];
+  syncDATA = [];
+
+  var table = document.getElementById("myTable");
+  table.innerHTML = "";
+
+  myFunction("none");
+}
+
 function convertArrayOfObjectsToCSV(args) {
   var result, ctr, keys, columnDelimiter, lineDelimiter, data;
 
@@ -134,12 +138,9 @@ function convertArrayOfObjectsToCSV(args) {
       ctr = 0;
       keys.forEach(function(key) {
           if (ctr > 0) result += columnDelimiter;
-          // console.log(item[key]);
           result += item[key];
           ctr++;
       });
-      console.log(ctr)
-      console.log(result);
       result += lineDelimiter;
   });
 
@@ -148,72 +149,40 @@ function convertArrayOfObjectsToCSV(args) {
 
 
 function downloadCSV(args) {
-  var data, filename, link;
-  var csv = convertArrayOfObjectsToCSV({
-      data: syncDATA
-  });
-  if (csv == null) return;
 
-  filename = args.filename || 'export.csv';
+  if (gpsDATA.length > 0 && sdrDATA.length > 0) {
 
-  if (!csv.match(/^data:text\/csv/i)) {
-      csv = 'data:text/csv;charset=utf-8,' + csv;
-      console.log(csv)
+    var data, filename, link;
+    var csv = convertArrayOfObjectsToCSV({
+        data: syncDATA
+    });
+    if (csv == null) return;
+
+    filename = args.filename || 'export.csv';
+
+    if (!csv.match(/^data:text\/csv/i)) {
+        csv = 'data:text/csv;charset=utf-8,' + csv;
+        console.log(csv)
+    }
+    data = encodeURI(csv);
+
+    link = document.createElement('a');
+    link.setAttribute('href', data);
+    link.setAttribute('download', filename);
+    link.click();
   }
-  data = encodeURI(csv);
-
-  link = document.createElement('a');
-  link.setAttribute('href', data);
-  link.setAttribute('download', filename);
-  link.click();
+  else {
+    alert("Select Files To Read First");
+  }
 }
-
-
-// function download_csv() {
-//     var csv = '';
-//     var rows = 0;
-//     syncDATA.forEach(function(row) {
-//             csv += row.join(',');
-//             csv += "\n";
-//             rows += 1
-//     });
-//     for (var i = 0; i < syncDATA.length; i++) {
-//       for (var j = 0; j < 5; j++) {
-//         csv += syncDATA[j];
-//         csv += ','
-//       }
-//     }
-//
-//     console.log(rows)
-//     console.log(csv);
-//     var hiddenElement = document.createElement('a');
-//     hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-//     hiddenElement.target = '_blank';
-//     hiddenElement.download = 'people.csv';
-//     hiddenElement.click();
-// }
 
 
 function sync() {
   // create table
   var table = document.getElementById("myTable");
   table.innerHTML = "";
-  var row = table.insertRow(-1);
-  var cell1 = row.insertCell(-1);
-  var cell2 = row.insertCell(-1);
-  var cell3 = row.insertCell(-1);
-  var cell4 = row.insertCell(-1);
-  var cell5 = row.insertCell(-1);
-  var cell6 = row.insertCell(-1);
-  // table headings
-  cell1.innerHTML = "Iteration";
-  cell2.innerHTML = "UTC Timestamp";
-  cell3.innerHTML = "Frequency";
-  cell4.innerHTML = "Level";
-  cell5.innerHTML = "Lat";
-  cell6.innerHTML = "Lon";
-
   syncDATA = [["UTC Timestamp", "Frequency", "Level", "Lat", "Lon"]];
+
   for (var i = 0; i < sdrDATA.length; i++) {
     var syncArray = [];
 
@@ -227,42 +196,33 @@ function sync() {
 
     syncArray.push(sdrDATA[i][0]);
     syncArray.push(sdrDATA[i][1]);
-    syncArray.push(sdrDATA[i][2]);
-    // syncArray.push(sdrDATA[i][1]);
-    // syncArray.push(sdrDATA[i][2]);
+    syncArray.push(sdrDATA[i][2].replace(/(\r\n|\n|\r)/gm, ""));
     syncArray.push(gpsDATA[j][1]);
     syncArray.push(gpsDATA[j][2]);
 
     syncDATA.push(syncArray); //push synced data array into synced CSV
 
-
     var row = table.insertRow(-1);
-    var cell1 = row.insertCell(-1);
     var cell2 = row.insertCell(-1);
     var cell3 = row.insertCell(-1);
     var cell4 = row.insertCell(-1);
     var cell5 = row.insertCell(-1);
     var cell6 = row.insertCell(-1);
 
-    cell1.innerHTML = i+1;
+    // cell1.innerHTML = i+1;
     cell2.innerHTML = syncDATA[i][0];
     cell3.innerHTML = syncDATA[i][1];
     cell4.innerHTML = syncDATA[i][2];
     cell5.innerHTML = syncDATA[i][3];
     cell6.innerHTML = syncDATA[i][4];
   }
+
   // save path to local storage so it can be accessed in Track page
-  // localStorage.setItem("syncDATA", JSON.stringify(syncDATA));
   sessionStorage.setItem("sdrDATA", JSON.stringify(sdrDATA));
   sessionStorage.setItem("gpsDATA", JSON.stringify(gpsDATA));
-
   sessionStorage.setItem("syncDATA", JSON.stringify(syncDATA));
-  myFunction("block");
 
-  sdrDATA = [];
-  gpsDATA = [];
-  syncDATA = [];
-  console.log(syncDATA)
+  myFunction("block");
 }
 
 
@@ -272,34 +232,26 @@ document.getElementById('.csvfile').onchange = function() {
   var reader = new FileReader();
   reader.onload = function(progressEvent) {
 
-  var lines = this.result.split('\n');
-  for(var line = 0; line < lines.length; line++) {
-    if(lines[line].includes("150.671875")) {
+    var lines = this.result.split('\n');
+    for(var line = 0; line < lines.length; line++) {
+      if(lines[line].includes("150.671875")) {
 
-      var stringArray = lines[line].split(','); //values per row
+        var stringArray = lines[line].split(','); //values per row
 
-      stringArray[0] = parseInt(stringArray[0])+25;
-      sdrDATA.push(stringArray);
+        stringArray[0] = parseInt(stringArray[0])+25;
+        sdrDATA.push(stringArray);
 
-      var secondRow = []
-      secondRow[0] = parseInt(stringArray[0])+1;
-      secondRow[1] = stringArray[1];
-      secondRow[2] = stringArray[2]
-      sdrDATA.push(secondRow);
+        var secondRow = []
+        secondRow[0] = parseInt(stringArray[0])+1;
+        secondRow[1] = stringArray[1];
+        secondRow[2] = stringArray[2]
+        sdrDATA.push(secondRow);
+      }
     }
-  }
-  console.log("data: ", sdrDATA);
-  if (sdrDATA.length > 0) {
-    if (gpsDATA.length > 0) {
-      sync();
+    console.log("data: ", sdrDATA);
+    if (sdrDATA.length > 0) {
+      if (gpsDATA.length > 0) { sync(); }
     }
-    else {
-      alert("Load both files");
-    }
-  }
-  else {
-    alert("Emtpy File");
-  }
   };
   reader.readAsText(file);
 };
@@ -348,15 +300,7 @@ document.getElementById('.nmeafile').onchange = function() {
     }
     console.log("data: ", gpsDATA);
     if (gpsDATA.length > 0) {
-      if (sdrDATA.length > 0) {
-        sync();
-      }
-      else {
-        alert("Load Both files");
-      }
-    }
-    else {
-      alert("File empty");
+      if (sdrDATA.length > 0) { sync(); }
     }
   };
   reader.readAsText(file);
