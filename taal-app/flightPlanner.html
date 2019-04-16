@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>The Autonomous Animal Locator</title>
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
@@ -54,6 +54,41 @@
       // You can also require other files to run in this process
       require('./renderer.js')
     </script>
+    
+          <div id="modal-backdrop" class="hidden"></div>
+      <div id="success-modal" class="hidden">
+          <div class="modal-dialog">
+              <div class="modal-header">
+                  <h3>Flight Path Downloaded!</h3>
+                  <button type="button" class="modal-close-button">&times;</button>
+              </div>
+              <div class="modal-body">
+                  <h4>Flight Path saved as:</h4>
+                  <textarea id="path-text" readonly></textarea>
+                  <h4>To open in QGroundControl:</h4>
+                  <ol>
+                      <li>Go to plan tab
+                          <ul>
+                              <li>Click on icon of two pins connected by a curvy line</li>
+                          </ul>
+                      </li>
+                      <li>Click file</li>
+                      <li>Click open</li>
+                      <li>In file browser:
+                          <ul>
+                              <li>Navigate to proper directory</li>
+                              <li>Select the plan file</li>
+                              <li>Click open</li>
+                          </ul>
+                      </li>
+                  </ol>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="modal-accept-button">Okay</button>
+              </div>
+          </div>
+      </div>
+    
     <script src="./script.js"></script>
   </body>
 </html>
