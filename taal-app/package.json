@@ -12,5 +12,9 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^4.1.4"
+  },
+  "dependencies": {
+    "electron-root-path": "^1.0.9",
+    "eslint": "^5.16.0"
   }
 }

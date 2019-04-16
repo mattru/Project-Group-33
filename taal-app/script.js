@@ -1,5 +1,7 @@
 const fs = require('fs');
 const stream = require('stream');
+const path = require('path');
+const rootpath = require('electron-root-path').rootPath;
 
 var map;
 var drawingManager;
@@ -11,6 +13,14 @@ var flightMap = new Map;
 var testMarker = null;
 
 const flightDiffAmount = .0012;
+
+function togHidden() {
+    if (!(document.getElementById('modal-backdrop').classList.contains('hidden'))) {
+        document.getElementById('path-text').value = "";
+    }
+    document.getElementById('modal-backdrop').classList.toggle('hidden');
+    document.getElementById('success-modal').classList.toggle('hidden');
+}
 
 document.getElementById("rectangle-button").addEventListener("click", function() {
 
@@ -29,6 +39,24 @@ document.getElementById("rectangle-button").addEventListener("click", function()
     drawingManager.setMap(map);
 });
 
+/*
+document.getElementById("circle-button").addEventListener("click", function() {
+
+    deletePrevShape();
+
+    drawingManager.setOptions({
+        drawingMode : google.maps.drawing.OverlayType.CIRCLE,
+        drawingControl : true,
+        drawingControlOptions : {
+            position : google.maps.ControlPosition.TOP_CENTER,
+            drawingModes : [ google.maps.drawing.OverlayType.CIRCLE ]
+        }
+    });
+
+    drawingManager.setMap(map);
+});
+*/
+
 document.getElementById("download-flight").addEventListener("click", function() {
     flightPath = flightMap.get(flightDiffAmount);
     if (flightPath == undefined) {
@@ -38,13 +66,13 @@ document.getElementById("download-flight").addEventListener("click", function() 
     let middlePath = flightPath[Math.round(flightPath.length / 2)];
     let testMarkerLat = middlePath.getPath().getArray()[0].lat();
     let testMarkerLng = middlePath.getPath().getArray()[0].lng();
-
+    /*
     testMarker = new google.maps.Marker({
         position: {lat: testMarkerLat, lng: testMarkerLng},
         map: map,
         title: 'Test marker for triangulation'
     });
-
+    */
     // save path to local storage so it can be accessed in Track page
     localStorage.setItem("flightPath", JSON.stringify(flightPath));
     localStorage.setItem("middlePath", JSON.stringify(middlePath));
@@ -55,14 +83,20 @@ document.getElementById("download-flight").addEventListener("click", function() 
             if (err) throw err;
             console.log('flight_path.plan was deleted');
         });
-        
+        document.getElementById("path-text").readOnly = false;
+        document.getElementById('path-text').value = path.join(rootpath.toString(), 'flight_path.plan');
+        document.getElementById("path-text").readOnly = true;
         WritePLAN(flightPath, testMarkerLat, testMarkerLng);
+        togHidden();
     }
     catch(e) {
         alert('Failed to save file: ', e);
     }
 
 });
+
+document.querySelector('.modal-close-button').addEventListener('click', togHidden);
+document.querySelector('.modal-accept-button').addEventListener('click', togHidden);
 
 // initMap initializes the Google Map, as well as event handlers
 function initMap() {

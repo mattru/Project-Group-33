@@ -105,3 +105,103 @@ img {
 table, td {
   border: 1px solid black;
 }
+
+/* flight download modal */
+#modal-backdrop {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.85);
+}
+
+#success-modal {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 10px;
+    right: 0;
+    z-index: 1100;
+}
+
+#path-text {
+    max-width: 95%;
+    width: 100%;
+    border-style: none;
+    border-color: transparent;
+    overflow: auto;
+    resize: none;
+    outline-style: none;
+}
+
+#path-text:hover {
+    cursor: default;
+}
+
+.hidden {
+    display: none;
+}
+
+.modal-dialog {
+    width: auto;
+    max-width: 700px;
+    min-width: 350px;
+    min-height: 300px;
+    margin: 40px auto;
+    background-color: #fff;
+    border-radius: 15px;
+}
+
+.modal-header {
+    position: relative;
+    padding: 10px 20px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 28px;
+    text-align-last: center;
+}
+
+.modal-close-button {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    font-size: 24px;
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 10px 20px 10px;
+}
+
+.modal-footer button {
+    font-size: 20px;
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 10px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.modal-footer .modal-accept-button {
+    background-color: #319df6;
+    color: #fff;
+}
+
+.modal-footer .modal-accept-button:hover {
+    background-color: #087dde;
+}
