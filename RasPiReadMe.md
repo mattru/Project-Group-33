@@ -17,3 +17,13 @@ But it is based on the uBlox M7 or M8 gps chip.
 
 The RTLSDR script will scan freq 150-151MHz 20 times, then output the data into a csv to /media/USB1. If the sweeps are interrupted the data will not be saved. This means the Pi cannot be powered down until the script has finished. 
 20 sweeps has taken me, on average, 16 minutes.
+
+Step by step Pi with Receiver user guid:
+  1. Plug in the RTLSDR receiver to a USB Port
+  1. Plug in USB GPS device to USB Port
+  1. Plug in USB Flash drive to USB Port
+  1. If not attached, connect antenna to receiver
+  1. When ready to collect data, plug in power to the Pi. (I used a power bank connected to the micro USB port on the Pi)
+  1. Wait ~18 minutes before disconnecting power
+  
+  (if testing not on a drone, you can connect the Pi to a monitor and watch the receiver scans complete as they log to the screen)
