@@ -69,7 +69,7 @@ function localBegin() { //use local data
         max1 = Math.max(max1,temp);
         dataArray1[i].intensity = temp;
     }
-    //generate();
+    generate();
 }
 
 function begin1() { //single file upload
