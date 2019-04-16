@@ -2,25 +2,21 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>The Autonomous Animal Locator</title>
+    <title> Data Analyzation </title>
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
     <head>
    </head>
-   
+
    <body>
       <div class="sidebar">
-
           <div class="Menu">
-            <input id="tabBTN" type="button" value="FlightPlan"
-            onclick="window.location = './flightPlanner.html'" />
-          
-            <input id="tabBTN" type="button" value="Data"
-            onclick="window.location = './rawData.html'" />
-          
-            <input id="tabBTN" type="button" value="Track"
-            onclick="window.location = './processedData.html'" />
+            <input id="tabBTN" type="button" value="FlightPlan" onclick="window.location = './flightPlanner.html'" />
+
+            <input id="tabBTN" type="button" value="Data" onclick="window.location = './rawData.html'" />
+
+            <input id="tabBTN" type="button" value="Track" onclick="window.location = './processedData.html'" />
           </div>
       </div>
 
@@ -31,73 +27,339 @@
           <div>
               <form class="form-horizontal well">
                 <fieldset>
-                    <label for="csvFileInput"> <strong>CSV File:</strong>
-                    </label>
-                    <input type="file" id="csvFileInput" onchange="handleFiles(this.files)"
-                    accept=".csv">
+                    <input type="file" name=".csvfile" id=".csvfile" accept=".csv">
+                    <label for="csvFileInput"> <strong>Select SDR data file (.csv)</strong></label>
                 </fieldset>
+
+                <fieldset>
+                    <input type="file" name=".nmeafile" id=".nmeafile" accept=".nmea">
+                    <label for=".nmeafile"> <strong>Select GPS file (.nmea)</strong></label>
+                </fieldset>
+
+                <fieldset>
+
+                    <div id="myDIV" style="display: none;">
+                      <!-- <button style="display: none;" >SYNC</button> -->
+                      <button onclick="sync()"> SYNC</button>
+                    </div>
+
+                    <a href='#' onclick='downloadCSV({ filename: "stock-data.csv" });'>Download CSV</a>
+                    <!-- <button href='#' onclick='downloadCSV({ filename: "stock-data.csv" });'>Export combined File</button> -->
+
+                    <!-- <button onclick="window.location = './processedData.html'">Visualize</button> -->
+                    <button id="hiddenElement" style="display: none;" type="button" value="Visualize" onclick="window.location = './processedData.html'" >Visualize</button>
+
+                </fieldset>
+
+
+                <!-- <script type="text/javascript">
+                  function reload() {
+                    gpsDATA = JSON.parse(localStorage.getItem('gpsDATA'));
+                    sdrDATA = JSON.parse(localStorage.getItem('sdrDATA'));
+                    if (gpsDATA != null && sdrDATA != null) { sync(); }
+                  }
+                  window.onload = reload;
+                </script> -->
+
               </form>
           </div>
-          
-          <div id='answer'></div>
-            
-          <script type="text/javascript" src="./CSVscript.js"></script>
+
+
+          <table id="myTable">
+            <tr>
+              <!-- <td> Readings </td> -->
+            </tr>
+          </table>
       </div>
    </body>
 
 </html>
 
-
-
-
-
-<div class="main">
-    <div class="title">
-      Data Input
-    </div>
-    <div id="map">
-      <div>
-<form class="form-horizontal well">
-<fieldset>
-    <label for="csvFileInput"> <strong>CSV File:</strong>
-    </label>
-    <input type="file" id="csvFileInput" onchange="handleFiles(this.files)"
-    accept=".csv">
-</fieldset>
-</form>
-</div>
-
-<div id='answer'></div>
-
-<script type="text/javascript" src="./script.js"></script>
-    </div>
-  </div>
-</body>
-
 <script>
 
-document.getElementById('file').onchange = function() {
+var sdrDATA = [];
+var gpsDATA = [];
+var syncDATA = []
 
- var file = this.files[0];
-
- var reader = new FileReader();
- reader.onload = function(progressEvent) {
-   // Entire file
-   // console.log(this.result);
-
-  var table = document.getElementById("myTable");
-
-   // By lines
-   var lines = this.result.split('\n');
-   for(var line = 0; line < lines.length; line++){
-     if(lines[line].includes("GGA")) {
-      // console.log(lines[line]);
-      var row = table.insertRow(0);
-      var cell1 = row.insertCell(0);
-      cell1.innerHTML =lines[line];
-     }
-   }
- };
- reader.readAsText(file);
+Date.prototype.getUnixTime = function() {
+  return this.getTime()/1000|0
 };
+
+if(!Date.now) Date.now = function() {
+  return new Date();
+}
+
+Date.time = function() {
+  return Date.now().getUnixTime();
+}
+
+function myFunction(val) {
+  var x = document.getElementById("hiddenElement");
+  console.log(x);
+  x.style.display = val;
+}
+
+function reload() {
+
+  gps = JSON.parse(sessionStorage.getItem('gpsDATA'));
+  sdr = JSON.parse(sessionStorage.getItem('sdrDATA'));
+  if (gps != null && sdr != null) {
+    gpsDATA = gps;
+    sdrDATA = sdr;
+    sync();
+    myFunction("block");
+
+  }
+}
+window.onload = reload;
+
+function convertArrayOfObjectsToCSV(args) {
+  var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+  data = args.data || null;
+  if (data == null || !data.length) {
+      return null;
+  }
+
+  columnDelimiter = args.columnDelimiter || ',';
+  lineDelimiter = args.lineDelimiter || '\n';
+
+  keys = Object.keys(data[1]);
+
+  result = '';
+  result += keys.join(columnDelimiter);
+  result += lineDelimiter;
+
+  data.forEach(function(item) {
+      ctr = 0;
+      keys.forEach(function(key) {
+          if (ctr > 0) result += columnDelimiter;
+          // console.log(item[key]);
+          result += item[key];
+          ctr++;
+      });
+      console.log(ctr)
+      console.log(result);
+      result += lineDelimiter;
+  });
+
+  return result;
+}
+
+
+function downloadCSV(args) {
+  var data, filename, link;
+  var csv = convertArrayOfObjectsToCSV({
+      data: syncDATA
+  });
+  if (csv == null) return;
+
+  filename = args.filename || 'export.csv';
+
+  if (!csv.match(/^data:text\/csv/i)) {
+      csv = 'data:text/csv;charset=utf-8,' + csv;
+      console.log(csv)
+  }
+  data = encodeURI(csv);
+
+  link = document.createElement('a');
+  link.setAttribute('href', data);
+  link.setAttribute('download', filename);
+  link.click();
+}
+
+
+// function download_csv() {
+//     var csv = '';
+//     var rows = 0;
+//     syncDATA.forEach(function(row) {
+//             csv += row.join(',');
+//             csv += "\n";
+//             rows += 1
+//     });
+//     for (var i = 0; i < syncDATA.length; i++) {
+//       for (var j = 0; j < 5; j++) {
+//         csv += syncDATA[j];
+//         csv += ','
+//       }
+//     }
+//
+//     console.log(rows)
+//     console.log(csv);
+//     var hiddenElement = document.createElement('a');
+//     hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+//     hiddenElement.target = '_blank';
+//     hiddenElement.download = 'people.csv';
+//     hiddenElement.click();
+// }
+
+
+function sync() {
+  // create table
+  var table = document.getElementById("myTable");
+  table.innerHTML = "";
+  var row = table.insertRow(-1);
+  var cell1 = row.insertCell(-1);
+  var cell2 = row.insertCell(-1);
+  var cell3 = row.insertCell(-1);
+  var cell4 = row.insertCell(-1);
+  var cell5 = row.insertCell(-1);
+  var cell6 = row.insertCell(-1);
+  // table headings
+  cell1.innerHTML = "Iteration";
+  cell2.innerHTML = "UTC Timestamp";
+  cell3.innerHTML = "Frequency";
+  cell4.innerHTML = "Level";
+  cell5.innerHTML = "Lat";
+  cell6.innerHTML = "Lon";
+
+  syncDATA = [["UTC Timestamp", "Frequency", "Level", "Lat", "Lon"]];
+  for (var i = 0; i < sdrDATA.length; i++) {
+    var syncArray = [];
+
+    var objectFound;
+    for (var j = 0; j < gpsDATA.length; j++) {
+      if (gpsDATA[j][0] == sdrDATA[i][0]) {
+        objectFound = j;
+        break;
+      }
+    }
+
+    syncArray.push(sdrDATA[i][0]);
+    syncArray.push(sdrDATA[i][1]);
+    syncArray.push(sdrDATA[i][2]);
+    // syncArray.push(sdrDATA[i][1]);
+    // syncArray.push(sdrDATA[i][2]);
+    syncArray.push(gpsDATA[j][1]);
+    syncArray.push(gpsDATA[j][2]);
+
+    syncDATA.push(syncArray); //push synced data array into synced CSV
+
+
+    var row = table.insertRow(-1);
+    var cell1 = row.insertCell(-1);
+    var cell2 = row.insertCell(-1);
+    var cell3 = row.insertCell(-1);
+    var cell4 = row.insertCell(-1);
+    var cell5 = row.insertCell(-1);
+    var cell6 = row.insertCell(-1);
+
+    cell1.innerHTML = i+1;
+    cell2.innerHTML = syncDATA[i][0];
+    cell3.innerHTML = syncDATA[i][1];
+    cell4.innerHTML = syncDATA[i][2];
+    cell5.innerHTML = syncDATA[i][3];
+    cell6.innerHTML = syncDATA[i][4];
+  }
+  // save path to local storage so it can be accessed in Track page
+  // localStorage.setItem("syncDATA", JSON.stringify(syncDATA));
+  sessionStorage.setItem("sdrDATA", JSON.stringify(sdrDATA));
+  sessionStorage.setItem("gpsDATA", JSON.stringify(gpsDATA));
+
+  sessionStorage.setItem("syncDATA", JSON.stringify(syncDATA));
+  myFunction("block");
+
+  sdrDATA = [];
+  gpsDATA = [];
+  syncDATA = [];
+  console.log(syncDATA)
+}
+
+
+document.getElementById('.csvfile').onchange = function() {
+
+  var file = this.files[0];
+  var reader = new FileReader();
+  reader.onload = function(progressEvent) {
+
+  var lines = this.result.split('\n');
+  for(var line = 0; line < lines.length; line++) {
+    if(lines[line].includes("150.671875")) {
+
+      var stringArray = lines[line].split(','); //values per row
+
+      stringArray[0] = parseInt(stringArray[0])+25;
+      sdrDATA.push(stringArray);
+
+      var secondRow = []
+      secondRow[0] = parseInt(stringArray[0])+1;
+      secondRow[1] = stringArray[1];
+      secondRow[2] = stringArray[2]
+      sdrDATA.push(secondRow);
+    }
+  }
+  console.log("data: ", sdrDATA);
+  if (sdrDATA.length > 0) {
+    if (gpsDATA.length > 0) {
+      sync();
+    }
+    else {
+      alert("Load both files");
+    }
+  }
+  else {
+    alert("Emtpy File");
+  }
+  };
+  reader.readAsText(file);
+};
+
+document.getElementById('.nmeafile').onchange = function() {
+
+   var file = this.files[0];
+   var reader = new FileReader();
+   reader.onload = function(progressEvent) {
+
+    // var table = document.getElementById("myTable");
+    var lines = this.result.split('\n'); // read per line
+    for(var line = 0; line < lines.length; line++) {
+     gpsArray = []
+     if(lines[line].includes("GGA")) { // only read $GPGGA data Rows
+
+       var stringArray = lines[line].split(' '); //values per row
+       var stringArray2 = stringArray[2].split(',');  // lat and long values in the second half of row
+
+       var parsedUnixTime = new Date(stringArray[0] + ' ' + stringArray[1] + ' UTC').getUnixTime(); // UTC timestamp
+
+       // lattitude value calculator
+       var lat = stringArray2[2].split('.'); // find . character to splt lat
+       var latDeg = lat[0].slice(0,-2); // pull degree value from lat, first 2 or 3 digits
+       if (stringArray2[3] == 'S') { // negative degrees if S
+         latDeg = latDeg * -1;
+       }
+       var latMin = (lat[0].slice(-2) + '.' + lat[1]) / 60; // take minutes value and divide by 60 seconds
+       latMin = latMin.toString().substring(1); // remove leading zero before .
+
+       // longitude value calculator
+       var lon = stringArray2[4].split('.'); // find . character to splt lat
+       var lonDeg = lon[0].slice(0,-2); // pull degree value from lat, first 2 or 3 digits
+       if (stringArray2[5] == 'W') { // negative degrees if S
+         lonDeg = lonDeg * -1;
+       }
+       var lonMin = (lon[0].slice(-2) + '.' + lon[1]) / 60; // take minutes value and divide by 60 seconds
+       lonMin = lonMin.toString().substring(1); // remove leading zero before .
+
+       gpsArray.push(parsedUnixTime-3600); //UTC timestamp - subtracting an entire hour because DST
+       gpsArray.push(latDeg + latMin) // lat
+       gpsArray.push(lonDeg + lonMin) // long
+
+       gpsDATA.push(gpsArray);
+     }
+    }
+    console.log("data: ", gpsDATA);
+    if (gpsDATA.length > 0) {
+      if (sdrDATA.length > 0) {
+        sync();
+      }
+      else {
+        alert("Load Both files");
+      }
+    }
+    else {
+      alert("File empty");
+    }
+  };
+  reader.readAsText(file);
+};
+
 </script>

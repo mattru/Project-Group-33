@@ -1,14 +1,34 @@
 //To Do: Add html error messages if not all files are added or aren't .csv files
 //****** Fix median function... guess: lat lng coordinates different than cartesian coordinate system */
+/*var sync = JSON.parse(sessionStorage.getItem('syncDATA'));
+var varsyncDATA = new Array();
+if (sync != null) {
+    varsyncDATA = sync; //CSV Array of arrays
+    console.log(syncDATA);
+}*/
+
+sync = JSON.parse(sessionStorage.getItem('syncDATA'));
+// if (gps != null && sdr != null && sync != null) {
+//var syncDATA = new Array();
+if (sync != null) {
+  // gpsDATA = gps;
+  // console.log(gpsDATA);
+  // sdrDATA = sdr;
+  // console.log(sdrDATA);
+  // sync();
+  syncDATA = sync; //CSV Array of arrays
+  //console.log(syncDATA);
+}
 
 var dataArray1 = new Array(); var dataArray2 = new Array(); var dataArray3 = new Array(); //data arrays for storing imported intensity,lat,lng
 var freqArray = new Array(); //filler for different frequencies each with their own dataArray + frequency number
-//var dataArray = convertLineIntoArray(path); //imported test flightpath data
-var map; var mapCenter = { lat: 44.5646, lng: -123.2620 }; var mapZoom = 14; var mapType;
+var allBearings = new Array(); var allError1 = new Array(); var allError2 = new Array();
+var loadmap; var heatmap; var dataPoints; var avgMarker;
+var mapCenter = { lat: 44.5646, lng: -123.2620 }; var mapZoom = 14; var mapType;
 var typeFlag = 0; var max1 = 0;
 var tLines = 1; var tOpacity = 1; var tRadius = 1; var lineLength = 0.5;
 
-function toggleLines() {
+function toggleLines() { //toggle bearing line visibility
     tLines++;
     if (tLines > 1) {
         tLines = 0;
@@ -16,7 +36,7 @@ function toggleLines() {
     generate();
 }
 
-function toggleOpacity() {
+function toggleOpacity() { //heatmap visibility
     tOpacity++;
     if (tOpacity > 1) {
         tOpacity = 0;
@@ -24,7 +44,7 @@ function toggleOpacity() {
     generate();
 }
 
-function changeRadius() {
+function changeRadius() { //heatmap radius scaling
     tRadius++;
     if (tRadius >= 4) {
         tRadius = 1;
@@ -32,6 +52,25 @@ function changeRadius() {
     generate();
 }
 
+function localBegin() { //use local data
+    typeFlag = 0;
+    dataArray1 = []; dataArray2 = []; dataArray3 = []; max1 = 0; //clear previous global values
+    for (var i = 1; i < syncDATA.length; i++) {
+            dataArray1.push({ intensity: parseFloat(syncDATA[i][2]), lat: parseFloat(syncDATA[i][3]), lng: parseFloat(syncDATA[i][4])});
+            if (dataArray1.length == 1) //find minimum
+                localMin = dataArray1[0].intensity;
+            localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
+        }
+    if (dataArray1.length == 0) //find minimum
+        return console.log("Error, length of file is 0");
+    var temp = 0;
+    for (var i = 0; i < dataArray1.length; i++) { //convert into intensity
+        temp = dataArray1[i].intensity + Math.abs(localMin);
+        max1 = Math.max(max1,temp);
+        dataArray1[i].intensity = temp;
+    }
+    generate();
+}
 
 function begin1() { //single file upload
     typeFlag = 0;
@@ -64,9 +103,11 @@ function begin1() { //single file upload
                 localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
             }
         }
+        var temp = 0;
         for (var i = 0; i < dataArray1.length; i++) { //convert into intensity
-            max1 = dataArray1[i].intensity + Math.abs(localMin);
-            dataArray1[i].intensity = max1;
+            temp = dataArray1[i].intensity + Math.abs(localMin);
+            max1 = Math.max(max1,temp);
+            dataArray1[i].intensity = temp;
         }
         generate();
     };
@@ -108,6 +149,7 @@ function begin3() { //three file upload
         }
         for (var i = 0; i < dataArray1.length; i++) //convert into intensity
             dataArray1[i].intensity = dataArray1[i].intensity + Math.abs(localMin);
+        //generate();
     };
 
     reader2.onload = function (progressEvent) {
@@ -137,6 +179,7 @@ function begin3() { //three file upload
         }
         for (var i = 0; i < dataArray2.length; i++) //convert into intensity
             dataArray2[i].intensity = dataArray2[i].intensity + Math.abs(localMin);
+        //generate();
     };
 
     reader3.onload = function (progressEvent) {
@@ -175,26 +218,53 @@ function begin3() { //three file upload
 }
 
 //*************** BEGIN ****************/
-function initMap() { //do nothing
+function initMap() { //initialize map overlays
     loadMap = new google.maps.Map(document.getElementById('map'), {
         center: mapCenter,
         zoom: mapZoom,
         mapTypeId: mapType
     });
+    heatmap = new google.maps.visualization.HeatmapLayer();
+    dataPoints = new google.maps.Polyline({
+        geodesic: true,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+    });
+    avgMarker = new google.maps.Marker({
+        title: "Average Location"
+    });
+    dataPoints.setMap(loadMap);
+    heatmap.setMap(loadMap);
+    avgMarker.setMap(loadMap);
 }
 function generate() {
-    mapCenter = loadMap.getCenter();
+    /*mapCenter = loadMap.getCenter();
     mapZoom = loadMap.getZoom();
     mapType = loadMap.getMapTypeId();
+    loadMap.setCenter(mapCenter);
+    loadMap.setZoom(mapZoom);
+    loadMap.setMapTypeId(mapType);
     loadMap = new google.maps.Map(document.getElementById('map'), {
         center: mapCenter,
         zoom: mapZoom,
         mapTypeId: mapType
-    });
+    });*/
     var polymapData = new Array(); //array of positional data
     var heatmapData = new Array(); //array of heatmap data, may be removed in future
     var bearingArray = new Array(); //array of bearing lines starting from second datapoint taken
     var intersectionData = new Array(); //array of intersection points
+
+    //wipe previous bearings
+    if (allBearings.length > 0){
+        for (i = 0; i < allBearings.length; i++)
+        {
+            allBearings[i].setMap(null);  //bearing overlay per point
+            allError1[i].setMap(null);
+            allError2[i].setMap(null);
+        }
+        allBearings = []; allError1 = []; allError2 = []; //cleanup previous bearing lines
+    }
 
     //actual values
     if (typeFlag == 0) //single receiver
@@ -206,68 +276,52 @@ function generate() {
     }
     else //three receivers
     {
-        for (i = 0; i < dataArray1.length; i++) //!!!!!!!!!!!need to change if data of each file vaires in length!!!!!!!!!!
+        var reducedLength = Math.min(Math.min(dataArray1.length,dataArray2.length),dataArray3.length);
+        for (i = 0; i < reducedLength; i++) //!!!!!!!!!!!need to change if data of each file vaires in length!!!!!!!!!!
         {
             addToArrays(polymapData, bearingArray, dataArray1[i].lat, dataArray1[i].lng, dataArray1[i].intensity, dataArray2[i].intensity, dataArray3[i].intensity);
         }
-
+        
         calculateHeatData(bearingArray, heatmapData, intersectionData); //(array of bearings,heatmap)
-        if (intersectionData.length != 0) {
+        if (intersectionData.length > 0) {
             averageData(intersectionData);
             //medianData(intersectionData);
         }
+
+        if (tLines == 1 && allBearings.length > 0)
+        {
+            for (i = 0; i < allBearings.length; i++)
+            {
+                allBearings[i].setMap(loadMap);  //bearing overlay per point
+                allError1[i].setMap(loadMap);
+                allError2[i].setMap(loadMap);
+            }
+        }
     }
 
-    //test flightpath
-    /*for (i = 0; i < dataArray.length; i++) {
-        testAddToArrays(polymapData, bearingArray, dataArray[i].lat, dataArray[i].lng);
-    }*/
-
-    //debug:
-    /*testAddToArraysAbs(polymapData,bearingArray,44.572,-123.237,90);
-    testAddToArraysAbs(polymapData,bearingArray,44.582,-123.257,45); 
-    testAddToArraysAbs(polymapData,bearingArray,44.592,-123.227,120);
-    testAddToArraysAbs(polymapData,bearingArray,44.602,-123.227,180);*/
-
-    //data processing to triangulation for three receivers:
-
-
-    //debug:
-    //console.log(findAbsoluteBearing(0,1,1,polymapData[0],polymapData[1])); //(front, backright, backleft, previousPt, currentPt)
-    /*console.log(line_intersect(bearingArray[0].x1,bearingArray[0].y1,bearingArray[0].x2,bearingArray[0].y2,
-      bearingArray[1].x1,bearingArray[1].y1,bearingArray[1].x2,bearingArray[1].y2));*/
-    /*console.log(line_intersect(bearingArray[0].x1,bearingArray[0].y1,bearingArray[0].x2,bearingArray[0].y2,
-      bearingArray[2].x1,bearingArray[2].y1,bearingArray[2].x2,bearingArray[2].y2));*/
-
     //initialize polyline overlay
-    var dataPoints = new google.maps.Polyline({
-        path: polymapData,
-        geodesic: true,
-        strokeColor: '#FF0000',
-        strokeOpacity: 1.0,
-        strokeWeight: 2
-    });
-    dataPoints.setMap(loadMap);
+    dataPoints.setPath(polymapData);
 
     //initialize heatmap overlay
-    var heatmap = new google.maps.visualization.HeatmapLayer({
-        data: heatmapData
-    });
-
+    heatmap.setData(heatmapData);
+    
     var radiusSize = tRadius * 50;
-    heatmap.setOptions({
-        //dissipating: true,
-        radius: radiusSize,
-        opacity: 0.5
-    });
     if (tOpacity == 1)
-        heatmap.setMap(loadMap);
-    //heatmap.set('opacity', heatmap.get('opacity') ? null : 0.5); //opacity 0.5 ****constants, might need to manipulate****
-    //heatmap.set('radius', heatmap.get('radius') ? null : 50); //overall radius
-    /*google.maps.event.addListener(map, 'zoom_changed', function () {
-      heatmap.setOptions(radius: map.getZoom());
-    });*/
-    map = loadMap; //initialize first map
+    {
+        heatmap.setOptions({
+            //dissipating: true,
+            radius: radiusSize,
+            opacity: 0.5
+        });
+    }
+    else
+    {
+        heatmap.setOptions({
+            radius: radiusSize,
+            opacity: 0
+        });
+    }
+    polymapData = []; heatmapData = []; bearingArray = []; intersectionData = []; //manual deallocation
 }
 
 function singleArrayConversion(poly, heat, lat, lng, intensity) { //add datapoints for single receiver
@@ -289,54 +343,60 @@ function addToArrays(poly, bear, lat, lng, frontF, backRF, backLF) { //add datap
         var bLat = lat + lineLength * Math.sin(absAngle); //y
         var bLng = lng + lineLength * Math.cos(absAngle); //x
         bear.push({ x1: lng, y1: lat, x2: bLng, y2: bLat }); //add bearing line to array of bearing lines for intersection calculation later
-        //form bearing line
-        var tempArray = new Array();
-        tempArray.push(new google.maps.LatLng(lat, lng));
-        tempArray.push(new google.maps.LatLng(bLat, bLng));
+        
+        if (tLines == 1)
+        {
+            //Form bearing line
+            var tempArray = new Array();
+            tempArray.push(new google.maps.LatLng(lat, lng));
+            tempArray.push(new google.maps.LatLng(bLat, bLng));
 
-        //Find Error Lines
-        var eConst = 1.96; //error line degree constant
-        var eLat1 = lat + lineLength * Math.sin(absAngle + eConst * Math.PI / 180);
-        var eLat2 = lat + lineLength * Math.sin(absAngle - eConst * Math.PI / 180);
-        var eLng1 = lng + lineLength * Math.cos(absAngle + eConst * Math.PI / 180);
-        var eLng2 = lng + lineLength * Math.cos(absAngle - eConst * Math.PI / 180);
+            //Find Error Lines
+            var eConst = 1.96; //error line degree constant
+            var eLat1 = lat + lineLength * Math.sin(absAngle + eConst * Math.PI / 180);
+            var eLat2 = lat + lineLength * Math.sin(absAngle - eConst * Math.PI / 180);
+            var eLng1 = lng + lineLength * Math.cos(absAngle + eConst * Math.PI / 180);
+            var eLng2 = lng + lineLength * Math.cos(absAngle - eConst * Math.PI / 180);
 
-        //form error lines
-        var eArray1 = new Array(); //error line 1
-        var eArray2 = new Array(); //error line 2
-        eArray1.push(new google.maps.LatLng(lat, lng));
-        eArray1.push(new google.maps.LatLng(eLat1, eLng1));
-        eArray2.push(new google.maps.LatLng(lat, lng));
-        eArray2.push(new google.maps.LatLng(eLat2, eLng2));
+            //form error lines
+            var eArray1 = new Array(); //error line 1
+            var eArray2 = new Array(); //error line 2
+            eArray1.push(new google.maps.LatLng(lat, lng));
+            eArray1.push(new google.maps.LatLng(eLat1, eLng1));
+            eArray2.push(new google.maps.LatLng(lat, lng));
+            eArray2.push(new google.maps.LatLng(eLat2, eLng2));
 
-        //polyline setup
-        var bearingLine = new google.maps.Polyline({ //bearing line
-            path: tempArray,
-            geodesic: true,
-            strokeColor: '#0000FF',
-            strokeOpacity: 0.3,
-            strokeWeight: 1
-        });
-        var errorLine1 = new google.maps.Polyline({ //first error line
-            path: eArray1,
-            geodesic: true,
-            strokeColor: '#00FF00',
-            strokeOpacity: 1.0,
-            strokeWeight: 1
-        });
-        var errorLine2 = new google.maps.Polyline({ //second error line
-            path: eArray2,
-            geodesic: true,
-            strokeColor: '#00FF00',
-            strokeOpacity: 1.0,
-            strokeWeight: 1
-        });
+            //polyline setup
+            var bearingLine = new google.maps.Polyline({ //bearing line
+                path: tempArray,
+                geodesic: true,
+                strokeColor: '#0000FF',
+                strokeOpacity: 0.3,
+                strokeWeight: 1
+            });
+            var errorLine1 = new google.maps.Polyline({ //first error line
+                path: eArray1,
+                geodesic: true,
+                strokeColor: '#00FF00',
+                strokeOpacity: 1.0,
+                strokeWeight: 1
+            });
+            var errorLine2 = new google.maps.Polyline({ //second error line
+                path: eArray2,
+                geodesic: true,
+                strokeColor: '#00FF00',
+                strokeOpacity: 1.0,
+                strokeWeight: 1
+            });
 
-        //render
-        if (tLines == 1) {
-            bearingLine.setMap(loadMap);  //bearing overlay per point
-            errorLine1.setMap(loadMap);
-            errorLine2.setMap(loadMap);
+            //store polylines
+            allBearings.push(bearingLine);
+            allError1.push(errorLine1);
+            allError2.push(errorLine2);
+
+            tempArray = [];
+            eArray1 = [];
+            eArray2 = [];
         }
     }
 }
@@ -379,7 +439,7 @@ function calculateHeatData(bearA, heat, interData) { //find all intersections be
 function averageData(interArray) {
     var xNumer = 0; //mw :weighted average of x where summation(mw/w)
     var yNumer = 0; //weighted average of y
-    var denom = 0; //w
+    var denom = 0;
     for (i = 0; i < interArray.length; i++) {
         xNumer = xNumer + interArray[i].intensity * interArray[i].lng;
         yNumer = yNumer + interArray[i].intensity * interArray[i].lat;
@@ -388,11 +448,9 @@ function averageData(interArray) {
     var averageIntersection = new google.maps.LatLng(yNumer / denom, xNumer / denom); //data point of where average intersection is displayed
     //console.log(interArray[1].intensity);
     //initialize average point display
-    var avgMarker = new google.maps.Marker({
-        position: averageIntersection,
-        title: "Average Location"
+    avgMarker.setOptions({
+        position: averageIntersection
     });
-    avgMarker.setMap(loadMap);
 }
 
 function medianData(interArray) { //take median intersection point of dataset, O(nlogn)
@@ -512,150 +570,4 @@ function distance(intersectA, bearA) {
     var a = intersectA.x - bearA.x1; //a = x1 - x2;
     var b = intersectA.y - bearA.y1; //b = y1 - y2;
     return Math.sqrt(a * a + b * b);
-}
-
-
-//filler*****************************
-
-function testAddToArraysAbs(poly, bear, lat, lng, abs) { //add datapoints to position and bearing arrays from absolute bearing (degrees from unit circle), used for test flightpath only
-    poly.push(new google.maps.LatLng(lat, lng)); //general path
-
-    if (poly.length > 1) //generate bearing line from datapoint + previous datapoint
-    {
-        //!!!!!!Improvement: change lineLength to be calculated from receiver intensity instead of constant!!!!!!!!
-        //var lineLength = 0.1; //~~~~~constant to control length of bearing line, higher values = more error due to spherical earth~~~~~~
-        var absAngle = abs * Math.PI / 180; //radians
-
-        //Find Bearing Line
-        var bLat = lat + lineLength * Math.sin(absAngle); //y
-        var bLng = lng + lineLength * Math.cos(absAngle); //x
-        bear.push({ x1: lng, y1: lat, x2: bLng, y2: bLat }); //add bearing line to array of bearing lines for intersection calculation later
-        //form bearing line
-        var tempArray = new Array();
-        tempArray.push(new google.maps.LatLng(lat, lng));
-        tempArray.push(new google.maps.LatLng(bLat, bLng));
-
-        //Find Error Lines
-        var eConst = 1.96; //error line degree constant
-        var eLat1 = lat + lineLength * Math.sin(absAngle + eConst * Math.PI / 180);
-        var eLat2 = lat + lineLength * Math.sin(absAngle - eConst * Math.PI / 180);
-        var eLng1 = lng + lineLength * Math.cos(absAngle + eConst * Math.PI / 180);
-        var eLng2 = lng + lineLength * Math.cos(absAngle - eConst * Math.PI / 180);
-
-        //form error lines
-        var eArray1 = new Array(); //error line 1
-        var eArray2 = new Array(); //error line 2
-        eArray1.push(new google.maps.LatLng(lat, lng));
-        eArray1.push(new google.maps.LatLng(eLat1, eLng1));
-        eArray2.push(new google.maps.LatLng(lat, lng));
-        eArray2.push(new google.maps.LatLng(eLat2, eLng2));
-
-        //polyline setup
-        var bearingLine = new google.maps.Polyline({ //bearing line
-            path: tempArray,
-            geodesic: true,
-            strokeColor: '#0000FF',
-            strokeOpacity: 0.3,
-            strokeWeight: 1
-        });
-        var errorLine1 = new google.maps.Polyline({ //first error line
-            path: eArray1,
-            geodesic: true,
-            strokeColor: '#00FF00',
-            strokeOpacity: 1.0,
-            strokeWeight: 1
-        });
-        var errorLine2 = new google.maps.Polyline({ //second error line
-            path: eArray2,
-            geodesic: true,
-            strokeColor: '#00FF00',
-            strokeOpacity: 1.0,
-            strokeWeight: 1
-        });
-
-        //render
-        if (tLines == 1) {
-            bearingLine.setMap(loadMap);  //bearing overlay per point
-            errorLine1.setMap(loadMap);
-            errorLine2.setMap(loadMap);
-        }
-    }
-}
-
-function testFindAbsoluteBearing(prevPointLat, prevPointLng, curPoint) { //for test flightpath only
-    var absoluteDirection = Math.atan2((curPoint.latLngs.j[0].j[0].lat - prevPointLat), (curPoint.latLngs.j[0].j[0].lng - prevPointLng));
-    return absoluteDirection; //radians
-};
-
-function testAddToArrays(poly, bear, lat, lng) { //add datapoints to position and bearing arrays for test flightpath only
-    poly.push(new google.maps.LatLng(lat, lng)); //general path
-
-    if (poly.length > 1) //generate bearing line from datapoint + previous datapoint
-    {
-        //!!!!!!Improvement: change lineLength to be calculated from receiver intensity instead of constant!!!!!!!!
-        //var lineLength = 0.01; //~~~~~constant to control length of bearing line, higher values = more error due to spherical earth~~~~~~
-        var absAngle = testFindAbsoluteBearing(lat, lng, middlePoint); //radians
-
-        //Find Bearing Line
-        var bLat = lat + lineLength * Math.sin(absAngle); //y
-        var bLng = lng + lineLength * Math.cos(absAngle); //x
-        bear.push({ x1: lng, y1: lat, x2: bLng, y2: bLat }); //add bearing line to array of bearing lines for intersection calculation later
-        //form bearing line
-        var tempArray = new Array();
-        tempArray.push(new google.maps.LatLng(lat, lng));
-        tempArray.push(new google.maps.LatLng(bLat, bLng));
-
-        //Find Error Lines
-        var eConst = 1.96; //error line degree constant
-        var eLat1 = lat + lineLength * Math.sin(absAngle + eConst * Math.PI / 180);
-        var eLat2 = lat + lineLength * Math.sin(absAngle - eConst * Math.PI / 180);
-        var eLng1 = lng + lineLength * Math.cos(absAngle + eConst * Math.PI / 180);
-        var eLng2 = lng + lineLength * Math.cos(absAngle - eConst * Math.PI / 180);
-
-        //form error lines
-        var eArray1 = new Array(); //error line 1
-        var eArray2 = new Array(); //error line 2
-        eArray1.push(new google.maps.LatLng(lat, lng));
-        eArray1.push(new google.maps.LatLng(eLat1, eLng1));
-        eArray2.push(new google.maps.LatLng(lat, lng));
-        eArray2.push(new google.maps.LatLng(eLat2, eLng2));
-
-        //polyline setup
-        var bearingLine = new google.maps.Polyline({ //bearing line
-            path: tempArray,
-            geodesic: true,
-            strokeColor: '#0000FF',
-            strokeOpacity: 0.3,
-            strokeWeight: 1
-        });
-        var errorLine1 = new google.maps.Polyline({ //first error line
-            path: eArray1,
-            geodesic: true,
-            strokeColor: '#00FF00',
-            strokeOpacity: 1.0,
-            strokeWeight: 1
-        });
-        var errorLine2 = new google.maps.Polyline({ //second error line
-            path: eArray2,
-            geodesic: true,
-            strokeColor: '#00FF00',
-            strokeOpacity: 1.0,
-            strokeWeight: 1
-        });
-
-        //render
-        if (tLines == 1) {
-            bearingLine.setMap(loadMap);  //bearing overlay per point
-            //errorLine1.setMap(loadMap);
-            //errorLine2.setMap(loadMap);
-        }
-    }
-}
-
-function convertLineIntoArray(pathArray) { //just for test flightpath data
-    var tempArray = new Array();
-    for (i = 0; i < pathArray.length; i++) {
-        tempArray.push({ lat: pathArray[i].latLngs.j[0].j[0].lat, lng: pathArray[i].latLngs.j[0].j[0].lng });
-    }
-    return tempArray;
 }
