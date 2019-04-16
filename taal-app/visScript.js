@@ -7,6 +7,18 @@ if (sync != null) {
     console.log(syncDATA);
 }*/
 
+sync = JSON.parse(sessionStorage.getItem('syncDATA'));
+// if (gps != null && sdr != null && sync != null) {
+//var syncDATA = new Array();
+if (sync != null) {
+  // gpsDATA = gps;
+  // console.log(gpsDATA);
+  // sdrDATA = sdr;
+  // console.log(sdrDATA);
+  // sync();
+  syncDATA = sync; //CSV Array of arrays
+  //console.log(syncDATA);
+}
 
 var dataArray1 = new Array(); var dataArray2 = new Array(); var dataArray3 = new Array(); //data arrays for storing imported intensity,lat,lng
 var freqArray = new Array(); //filler for different frequencies each with their own dataArray + frequency number
@@ -43,22 +55,21 @@ function changeRadius() { //heatmap radius scaling
 function localBegin() { //use local data
     typeFlag = 0;
     dataArray1 = []; dataArray2 = []; dataArray3 = []; max1 = 0; //clear previous global values
-    dataArray1 = varsyncDATA;
-    dataArray1.shift();
-    var localMin = 0;
+    for (var i = 1; i < syncDATA.length; i++) {
+            dataArray1.push({ intensity: parseFloat(syncDATA[i][2]), lat: parseFloat(syncDATA[i][3]), lng: parseFloat(syncDATA[i][4])});
+            if (dataArray1.length == 1) //find minimum
+                localMin = dataArray1[0].intensity;
+            localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
+        }
     if (dataArray1.length == 0) //find minimum
         return console.log("Error, length of file is 0");
-    localMin = dataArray1[0].intensity;
-    for (var i = 1; i < dataArray.length; i++) { //find local minimum to use in creating intensity
-        localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
-    }
-    
+    var temp = 0;
     for (var i = 0; i < dataArray1.length; i++) { //convert into intensity
-        var temp = dataArray1[i].intensity + Math.abs(localMin);
+        temp = dataArray1[i].intensity + Math.abs(localMin);
         max1 = Math.max(max1,temp);
         dataArray1[i].intensity = temp;
     }
-    generate();
+    //generate();
 }
 
 function begin1() { //single file upload
@@ -92,8 +103,9 @@ function begin1() { //single file upload
                 localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
             }
         }
+        var temp = 0;
         for (var i = 0; i < dataArray1.length; i++) { //convert into intensity
-            var temp = dataArray1[i].intensity + Math.abs(localMin);
+            temp = dataArray1[i].intensity + Math.abs(localMin);
             max1 = Math.max(max1,temp);
             dataArray1[i].intensity = temp;
         }
