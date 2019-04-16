@@ -6,7 +6,7 @@ Pre-requisites:
 
 Build and run the application with the script:
 
-   * execute the build_and_run.sh script.
+   * execute the build_and_run.sh script with administrator privilidges.
 
 Build and run the application without the script:
 
