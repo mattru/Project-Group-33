@@ -9,7 +9,7 @@ Build and run the application with the script:
    * execute the build_and_run.sh script.
 
 Build and run the application without the script:
-    
-    * npm install
 
-    * npm start
+   * npm install
+   
+   * npm start
