@@ -72,7 +72,6 @@ function localBegin() { //use local data
         max1 = Math.max(max1,temp);
         dataArray1[i].intensity = temp;
     }
-    generate();
 }
 
 function begin1() { //single file upload
@@ -305,7 +304,7 @@ function generate() {
         {
             addToArrays(polymapData, bearingArray, dataArray1[i].lat, dataArray1[i].lng, dataArray1[i].intensity, dataArray2[i].intensity, dataArray3[i].intensity);
         }
-        
+
         calculateHeatData(bearingArray, heatmapData, intersectionData); //(array of bearings,heatmap)
         if (intersectionData.length > 0) {
             averageData(intersectionData);
@@ -328,7 +327,7 @@ function generate() {
 
     //initialize heatmap overlay
     heatmap.setData(heatmapData);
-    
+
     var radiusSize = tRadius * 50;
     if (tOpacity == 1)
     {
@@ -367,7 +366,7 @@ function addToArrays(poly, bear, lat, lng, frontF, backRF, backLF) { //add datap
         var bLat = lat + lineLength * Math.sin(absAngle); //y
         var bLng = lng + lineLength * Math.cos(absAngle); //x
         bear.push({ x1: lng, y1: lat, x2: bLng, y2: bLat }); //add bearing line to array of bearing lines for intersection calculation later
-        
+
         if (tLines == 1)
         {
             //Form bearing line
@@ -432,7 +431,7 @@ function findAbsoluteBearing(frontF, backRF, backLF, prevPoint, curPoint) { //fl
     var backRAngle = 240 * Math.PI / 180; //         / \
     var backLAngle = 120 * Math.PI / 180; //        L---R
 
-    //will need a way to deal with bearing when drone is above transmitter 
+    //will need a way to deal with bearing when drone is above transmitter
     var relativeBearing = Math.atan2((frontF * Math.sin(frontAngle) + backRF * Math.sin(backRAngle) + backLF * Math.sin(backLAngle)), (frontF * Math.cos(frontAngle) + backRF * Math.cos(backRAngle) + backLF * Math.cos(backLAngle)));
     var absoluteDirection = Math.atan2((curPoint.lat() - prevPoint.lat()), (curPoint.lng() - prevPoint.lng()));
 
