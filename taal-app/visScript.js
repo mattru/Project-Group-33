@@ -6,8 +6,7 @@ if (sync != null) {
     varsyncDATA = sync; //CSV Array of arrays
     console.log(syncDATA);
 }*/
-
-var sync = JSON.parse(sessionStorage.getItem('syncDATA'));
+sync = JSON.parse(sessionStorage.getItem('syncDATA'));
 // if (gps != null && sdr != null && sync != null) {
 //var syncDATA = new Array();
 if (sync != null) {
@@ -53,28 +52,25 @@ function changeRadius() { //heatmap radius scaling
 }
 
 function localBegin() { //use local data
-
-    if(sync != null) {
-      typeFlag = 0;
-      dataArray1 = []; dataArray2 = []; dataArray3 = []; max1 = 0; //clear previous global values
-      for (var i = 1; i < syncDATA.length; i++) {
-              dataArray1.push({ intensity: parseFloat(syncDATA[i][2]), lat: parseFloat(syncDATA[i][3]), lng: parseFloat(syncDATA[i][4])});
-              if (dataArray1.length == 1) //find minimum
-                  localMin = dataArray1[0].intensity;
-              localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
-          }
-      if (dataArray1.length == 0) //find minimum
-          return console.log("Error, length of file is 0");
-      var temp = 0;
-      for (var i = 0; i < dataArray1.length; i++) { //convert into intensity
-          temp = dataArray1[i].intensity + Math.abs(localMin);
-          max1 = Math.max(max1,temp);
-          dataArray1[i].intensity = temp;
-      }
-      generate();
+    if (typeof syncDATA == 'undefined')
+    {
+        return alert("Error: Data has not been converted yet.");
     }
-    else {
-        alert("No Stored Data");
+    typeFlag = 0;
+    dataArray1 = []; dataArray2 = []; dataArray3 = []; max1 = 0; //clear previous global values
+    for (var i = 1; i < syncDATA.length; i++) {
+            dataArray1.push({ intensity: parseFloat(syncDATA[i][2]), lat: parseFloat(syncDATA[i][3]), lng: parseFloat(syncDATA[i][4])});
+            if (dataArray1.length == 1) //find minimum
+                localMin = dataArray1[0].intensity;
+            localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
+        }
+    if (dataArray1.length == 0) //find minimum
+        return alert("Error, length of generated data is 0.");
+    var temp = 0;
+    for (var i = 0; i < dataArray1.length; i++) { //convert into intensity
+        temp = dataArray1[i].intensity + Math.abs(localMin);
+        max1 = Math.max(max1,temp);
+        dataArray1[i].intensity = temp;
     }
 }
 
@@ -82,6 +78,7 @@ function begin1() { //single file upload
     typeFlag = 0;
     dataArray1 = []; dataArray2 = []; dataArray3 = []; max1 = 0; //clear previous global values
     var file = document.getElementById('u1').files[0];
+    var freqFilter = document.getElementById('f1').value;
 
     var reader = new FileReader();
     reader.onload = function (progressEvent) {
@@ -102,13 +99,17 @@ function begin1() { //single file upload
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
         for (var i = 1; i < lines.length; i++) {
-            if ((lines[i].toString()).split(',')[1] == 150.671875) {
+            if (isNaN((lines[i].toString()).split(',')[1])||isNaN(parseFloat((lines[i].toString()).split(',')[2]))||isNaN(parseFloat((lines[i].toString()).split(',')[3]))||isNaN(parseFloat((lines[i].toString()).split(',')[4])))
+                return alert("Error: Invalid .csv column format.");
+            if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
                 dataArray1.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
                 if (dataArray1.length == 1) //find minimum
                     localMin = dataArray1[0].intensity;
                 localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
             }
         }
+        if (dataArray1.length == 0)
+            return alert("Error: No data found on frequency: " + freqFilter + "\nTry a more precise or exact number.");
         var temp = 0;
         for (var i = 0; i < dataArray1.length; i++) { //convert into intensity
             temp = dataArray1[i].intensity + Math.abs(localMin);
@@ -126,6 +127,7 @@ function begin3() { //three file upload
     var file1 = document.getElementById('u2').files[0];
     var file2 = document.getElementById('u3').files[0];
     var file3 = document.getElementById('u4').files[0];
+    var freqFilter = document.getElementById('f2').value;
 
     var reader1 = new FileReader(); var reader2 = new FileReader(); var reader3 = new FileReader();
     reader1.onload = function (progressEvent) {
@@ -146,13 +148,17 @@ function begin3() { //three file upload
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
         for (var i = 1; i < lines.length; i++) {
-            if ((lines[i].toString()).split(',')[1] == 150.671875) {
+            if (isNaN((lines[i].toString()).split(',')[1])||isNaN(parseFloat((lines[i].toString()).split(',')[2]))||isNaN(parseFloat((lines[i].toString()).split(',')[3]))||isNaN(parseFloat((lines[i].toString()).split(',')[4])))
+                return alert("File 1: Invalid .csv column format.");
+            if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
                 dataArray1.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
                 if (dataArray1.length == 1) //find minimum
                     localMin = dataArray1[0].intensity;
                 localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
             }
         }
+        if (dataArray1.length == 0)
+            return alert("No data found on frequency: " + freqFilter + " for .csv file 1.\n");
         for (var i = 0; i < dataArray1.length; i++) //convert into intensity
             dataArray1[i].intensity = dataArray1[i].intensity + Math.abs(localMin);
         //generate();
@@ -176,13 +182,17 @@ function begin3() { //three file upload
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
         for (var i = 1; i < lines.length; i++) {
-            if ((lines[i].toString()).split(',')[1] == 150.671875) {
+            if (isNaN((lines[i].toString()).split(',')[1])||isNaN(parseFloat((lines[i].toString()).split(',')[2]))||isNaN(parseFloat((lines[i].toString()).split(',')[3]))||isNaN(parseFloat((lines[i].toString()).split(',')[4])))
+                return alert("File 2: Invalid .csv column format.");
+            if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
                 dataArray2.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
                 if (dataArray2.length == 1) //find minimum
                     localMin = dataArray2[0].intensity;
                 localMin = Math.min(dataArray2[dataArray2.length - 1].intensity, localMin);
             }
         }
+        if (dataArray2.length == 0)
+            return alert("No data found on frequency: " + freqFilter + " for .csv file 2.\n", freqFilter);
         for (var i = 0; i < dataArray2.length; i++) //convert into intensity
             dataArray2[i].intensity = dataArray2[i].intensity + Math.abs(localMin);
         //generate();
@@ -206,15 +216,21 @@ function begin3() { //three file upload
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
         for (var i = 1; i < lines.length; i++) {
-            if ((lines[i].toString()).split(',')[1] == 150.671875) {
+            if (isNaN((lines[i].toString()).split(',')[1])||isNaN(parseFloat((lines[i].toString()).split(',')[2]))||isNaN(parseFloat((lines[i].toString()).split(',')[3]))||isNaN(parseFloat((lines[i].toString()).split(',')[4])))
+                return alert("File 3: Invalid .csv column format.");
+            if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
                 dataArray3.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
                 if (dataArray3.length == 1) //find minimum
                     localMin = dataArray3[0].intensity;
                 localMin = Math.min(dataArray3[dataArray3.length - 1].intensity, localMin);
             }
         }
+        if (dataArray3.length == 0)
+            return alert("No data found on frequency: " + freqFilter + " for .csv file 3.\n");
         for (var i = 0; i < dataArray3.length; i++) //convert into intensity
             dataArray3[i].intensity = dataArray3[i].intensity + Math.abs(localMin);
+        if (dataArray1.length != dataArray2.length || dataArray2.length != dataArray3.length || dataArray3.length != dataArray1.length)
+            return alert("Error: Data file lengths do not match.");
         generate();
     };
 
@@ -233,6 +249,7 @@ function initMap() { //initialize map overlays
     heatmap = new google.maps.visualization.HeatmapLayer();
     dataPoints = new google.maps.Polyline({
         geodesic: true,
+        icons: [{icon: {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW}, offset:'50%', repeat: '20px'}], //repeat --> freezes program if .csv data is incorrect
         strokeColor: '#FF0000',
         strokeOpacity: 1.0,
         strokeWeight: 2
@@ -456,6 +473,9 @@ function averageData(interArray) {
     //initialize average point display
     avgMarker.setOptions({
         position: averageIntersection
+    });
+    loadMap.setOptions({
+        center: averageIntersection
     });
 }
 
