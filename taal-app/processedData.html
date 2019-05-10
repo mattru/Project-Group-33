@@ -49,15 +49,19 @@
         Back Left:
         <input name="uploadfile_3" type="file" id="u4" accept=".csv" value="Browse" required="required">
         <br>
-        Frequency:
+        Select Frequency for File Data:
         <input name="freqVal" type="number" step="any" id="f2" value="150.671875" required="required">
         <input type="submit" value="Create Map">
         <input type="reset" value="Clear">
       </form>
       <br>
-      <button id="generate-data" onclick="localBegin()">
-        Create map using stored data
-      </button>
+
+      <form id="generate-data" action="javascript:localBegin();" style="display: block">
+        Select Frequency for Stored Data:
+        <input name="freqVal" type="number" step="any" id="localFreq" value="150.671875" required="required">
+        <br>
+        <input type="submit" value="Create Map using Stored Data">
+      </form>
       <script>
         function changeForm(flag) {
           var x = document.getElementById("1-set");

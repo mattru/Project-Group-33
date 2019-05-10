@@ -10,13 +10,13 @@ sync = JSON.parse(sessionStorage.getItem('syncDATA'));
 // if (gps != null && sdr != null && sync != null) {
 //var syncDATA = new Array();
 if (sync != null) {
-  // gpsDATA = gps;
-  // console.log(gpsDATA);
-  // sdrDATA = sdr;
-  // console.log(sdrDATA);
-  // sync();
-  syncDATA = sync; //CSV Array of arrays
-  //console.log(syncDATA);
+    // gpsDATA = gps;
+    // console.log(gpsDATA);
+    // sdrDATA = sdr;
+    // console.log(sdrDATA);
+    // sync();
+    syncDATA = sync; //CSV Array of arrays
+    //console.log(syncDATA);
 }
 
 var dataArray1 = new Array(); var dataArray2 = new Array(); var dataArray3 = new Array(); //data arrays for storing imported intensity,lat,lng
@@ -52,26 +52,30 @@ function changeRadius() { //heatmap radius scaling
 }
 
 function localBegin() { //use local data
-    if (typeof syncDATA == 'undefined')
-    {
+    if (typeof syncDATA == 'undefined') {
         return alert("Error: Data has not been converted yet.");
     }
     typeFlag = 0;
     dataArray1 = []; dataArray2 = []; dataArray3 = []; max1 = 0; //clear previous global values
+    var freqFilter = document.getElementById('localFreq').value;
+    var localMin = 0;
     for (var i = 1; i < syncDATA.length; i++) {
-            dataArray1.push({ intensity: parseFloat(syncDATA[i][2]), lat: parseFloat(syncDATA[i][3]), lng: parseFloat(syncDATA[i][4])});
-            if (dataArray1.length == 1) //find minimum
+        if (parseFloat(syncDATA[i][1]) == freqFilter) {
+            dataArray1.push({ intensity: parseFloat(syncDATA[i][2]), lat: parseFloat(syncDATA[i][3]), lng: parseFloat(syncDATA[i][4]) });
+            if (dataArray1.length == 1) //find minimum starting from first element
                 localMin = dataArray1[0].intensity;
             localMin = Math.min(dataArray1[dataArray1.length - 1].intensity, localMin);
         }
-    if (dataArray1.length == 0) //find minimum
-        return alert("Error, length of generated data is 0.");
+    }
+    if (dataArray1.length == 0) //check if data exists
+        return alert("Error: No data found on frequency: " + freqFilter + "\nTry an exact frequency in the .csv file.");
     var temp = 0;
     for (var i = 0; i < dataArray1.length; i++) { //convert into intensity
         temp = dataArray1[i].intensity + Math.abs(localMin);
-        max1 = Math.max(max1,temp);
+        max1 = Math.max(max1, temp);
         dataArray1[i].intensity = temp;
     }
+    generate();
 }
 
 function begin1() { //single file upload
@@ -99,7 +103,7 @@ function begin1() { //single file upload
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
         for (var i = 1; i < lines.length; i++) {
-            if (isNaN((lines[i].toString()).split(',')[1])||isNaN(parseFloat((lines[i].toString()).split(',')[2]))||isNaN(parseFloat((lines[i].toString()).split(',')[3]))||isNaN(parseFloat((lines[i].toString()).split(',')[4])))
+            if (isNaN((lines[i].toString()).split(',')[1]) || isNaN(parseFloat((lines[i].toString()).split(',')[2])) || isNaN(parseFloat((lines[i].toString()).split(',')[3])) || isNaN(parseFloat((lines[i].toString()).split(',')[4])))
                 return alert("Error: Invalid .csv column format.");
             if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
                 dataArray1.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
@@ -109,11 +113,11 @@ function begin1() { //single file upload
             }
         }
         if (dataArray1.length == 0)
-            return alert("Error: No data found on frequency: " + freqFilter + "\nTry a more precise or exact number.");
+            return alert("Error: No data found on frequency: " + freqFilter + "\nCheck the .csv file and choose an existing frequency value.");
         var temp = 0;
         for (var i = 0; i < dataArray1.length; i++) { //convert into intensity
             temp = dataArray1[i].intensity + Math.abs(localMin);
-            max1 = Math.max(max1,temp);
+            max1 = Math.max(max1, temp);
             dataArray1[i].intensity = temp;
         }
         generate();
@@ -148,7 +152,7 @@ function begin3() { //three file upload
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
         for (var i = 1; i < lines.length; i++) {
-            if (isNaN((lines[i].toString()).split(',')[1])||isNaN(parseFloat((lines[i].toString()).split(',')[2]))||isNaN(parseFloat((lines[i].toString()).split(',')[3]))||isNaN(parseFloat((lines[i].toString()).split(',')[4])))
+            if (isNaN((lines[i].toString()).split(',')[1]) || isNaN(parseFloat((lines[i].toString()).split(',')[2])) || isNaN(parseFloat((lines[i].toString()).split(',')[3])) || isNaN(parseFloat((lines[i].toString()).split(',')[4])))
                 return alert("File 1: Invalid .csv column format.");
             if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
                 dataArray1.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
@@ -182,7 +186,7 @@ function begin3() { //three file upload
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
         for (var i = 1; i < lines.length; i++) {
-            if (isNaN((lines[i].toString()).split(',')[1])||isNaN(parseFloat((lines[i].toString()).split(',')[2]))||isNaN(parseFloat((lines[i].toString()).split(',')[3]))||isNaN(parseFloat((lines[i].toString()).split(',')[4])))
+            if (isNaN((lines[i].toString()).split(',')[1]) || isNaN(parseFloat((lines[i].toString()).split(',')[2])) || isNaN(parseFloat((lines[i].toString()).split(',')[3])) || isNaN(parseFloat((lines[i].toString()).split(',')[4])))
                 return alert("File 2: Invalid .csv column format.");
             if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
                 dataArray2.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
@@ -216,7 +220,7 @@ function begin3() { //three file upload
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
         for (var i = 1; i < lines.length; i++) {
-            if (isNaN((lines[i].toString()).split(',')[1])||isNaN(parseFloat((lines[i].toString()).split(',')[2]))||isNaN(parseFloat((lines[i].toString()).split(',')[3]))||isNaN(parseFloat((lines[i].toString()).split(',')[4])))
+            if (isNaN((lines[i].toString()).split(',')[1]) || isNaN(parseFloat((lines[i].toString()).split(',')[2])) || isNaN(parseFloat((lines[i].toString()).split(',')[3])) || isNaN(parseFloat((lines[i].toString()).split(',')[4])))
                 return alert("File 3: Invalid .csv column format.");
             if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
                 dataArray3.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
@@ -249,7 +253,7 @@ function initMap() { //initialize map overlays
     heatmap = new google.maps.visualization.HeatmapLayer();
     dataPoints = new google.maps.Polyline({
         geodesic: true,
-        icons: [{icon: {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW}, offset:'50%', repeat: '20px'}], //repeat --> freezes program if .csv data is incorrect
+        icons: [{ icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW }, offset: '50%', repeat: '20px' }], //repeat --> freezes program if .csv data is incorrect
         strokeColor: '#FF0000',
         strokeOpacity: 1.0,
         strokeWeight: 2
@@ -279,9 +283,8 @@ function generate() {
     var intersectionData = new Array(); //array of intersection points
 
     //wipe previous bearings
-    if (allBearings.length > 0){
-        for (i = 0; i < allBearings.length; i++)
-        {
+    if (allBearings.length > 0) {
+        for (i = 0; i < allBearings.length; i++) {
             allBearings[i].setMap(null);  //bearing overlay per point
             allError1[i].setMap(null);
             allError2[i].setMap(null);
@@ -299,7 +302,7 @@ function generate() {
     }
     else //three receivers
     {
-        var reducedLength = Math.min(Math.min(dataArray1.length,dataArray2.length),dataArray3.length);
+        var reducedLength = Math.min(Math.min(dataArray1.length, dataArray2.length), dataArray3.length);
         for (i = 0; i < reducedLength; i++) //!!!!!!!!!!!need to change if data of each file vaires in length!!!!!!!!!!
         {
             addToArrays(polymapData, bearingArray, dataArray1[i].lat, dataArray1[i].lng, dataArray1[i].intensity, dataArray2[i].intensity, dataArray3[i].intensity);
@@ -311,10 +314,8 @@ function generate() {
             //medianData(intersectionData);
         }
 
-        if (tLines == 1 && allBearings.length > 0)
-        {
-            for (i = 0; i < allBearings.length; i++)
-            {
+        if (tLines == 1 && allBearings.length > 0) {
+            for (i = 0; i < allBearings.length; i++) {
                 allBearings[i].setMap(loadMap);  //bearing overlay per point
                 allError1[i].setMap(loadMap);
                 allError2[i].setMap(loadMap);
@@ -329,16 +330,14 @@ function generate() {
     heatmap.setData(heatmapData);
 
     var radiusSize = tRadius * 50;
-    if (tOpacity == 1)
-    {
+    if (tOpacity == 1) {
         heatmap.setOptions({
             //dissipating: true,
             radius: radiusSize,
             opacity: 0.5
         });
     }
-    else
-    {
+    else {
         heatmap.setOptions({
             radius: radiusSize,
             opacity: 0
@@ -367,8 +366,7 @@ function addToArrays(poly, bear, lat, lng, frontF, backRF, backLF) { //add datap
         var bLng = lng + lineLength * Math.cos(absAngle); //x
         bear.push({ x1: lng, y1: lat, x2: bLng, y2: bLat }); //add bearing line to array of bearing lines for intersection calculation later
 
-        if (tLines == 1)
-        {
+        if (tLines == 1) {
             //Form bearing line
             var tempArray = new Array();
             tempArray.push(new google.maps.LatLng(lat, lng));
