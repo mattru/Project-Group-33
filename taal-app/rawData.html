@@ -46,7 +46,6 @@
                       <button onclick="sync()"> SYNC</button>
                     </div>
 
-                    <!-- <a href='#' onclick='downloadCSV({ filename: "stock-data.csv" });'>Download CSV</a> -->
                     <button href='#' onclick='downloadCSV({ filename: "stock-data.csv" });'>Export combined File</button>
 
                     <button id="hiddenElement" style="display: none;" type="button" value="Visualize" onclick="window.location = './processedData.html'" >Visualize Data</button>
@@ -55,11 +54,15 @@
               </form>
           </div>
 
-          <table id="myTable">
-            <tr>
-              <!-- <td> Readings </td> -->
-            </tr>
-          </table>
+          <!-- <div style="height:px;overflow:auto;"> -->
+          <div id="myTableDIV" >
+            <table id="myTable">
+              <tr>
+                <!-- <td> Readings </td> -->
+              </tr>
+            </table>
+          </div>
+
       </div>
    </body>
 
@@ -186,35 +189,36 @@ function sync() {
   for (var i = 0; i < sdrDATA.length; i++) {
     var syncArray = [];
 
-    var objectFound;
     for (var j = 0; j < gpsDATA.length; j++) {
+      var objectFound = 0;
       if (gpsDATA[j][0] == sdrDATA[i][0]) {
         objectFound = j;
         break;
       }
     }
+    if(objectFound) {
+      syncArray.push(sdrDATA[i][0]);
+      syncArray.push(sdrDATA[i][1]);
+      syncArray.push(sdrDATA[i][2].replace(/(\r\n|\n|\r)/gm, ""));
+      syncArray.push(gpsDATA[j][1]);
+      syncArray.push(gpsDATA[j][2]);
 
-    syncArray.push(sdrDATA[i][0]);
-    syncArray.push(sdrDATA[i][1]);
-    syncArray.push(sdrDATA[i][2].replace(/(\r\n|\n|\r)/gm, ""));
-    syncArray.push(gpsDATA[j][1]);
-    syncArray.push(gpsDATA[j][2]);
+      syncDATA.push(syncArray); //push synced data array into synced CSV
 
-    syncDATA.push(syncArray); //push synced data array into synced CSV
+      var row = table.insertRow(-1);
+      var cell2 = row.insertCell(-1);
+      var cell3 = row.insertCell(-1);
+      var cell4 = row.insertCell(-1);
+      var cell5 = row.insertCell(-1);
+      var cell6 = row.insertCell(-1);
 
-    var row = table.insertRow(-1);
-    var cell2 = row.insertCell(-1);
-    var cell3 = row.insertCell(-1);
-    var cell4 = row.insertCell(-1);
-    var cell5 = row.insertCell(-1);
-    var cell6 = row.insertCell(-1);
-
-    // cell1.innerHTML = i+1;
-    cell2.innerHTML = syncDATA[i][0];
-    cell3.innerHTML = syncDATA[i][1];
-    cell4.innerHTML = syncDATA[i][2];
-    cell5.innerHTML = syncDATA[i][3];
-    cell6.innerHTML = syncDATA[i][4];
+      // cell1.innerHTML = i+1;
+      cell2.innerHTML = syncDATA[i][0];
+      cell3.innerHTML = syncDATA[i][1];
+      cell4.innerHTML = syncDATA[i][2];
+      cell5.innerHTML = syncDATA[i][3];
+      cell6.innerHTML = syncDATA[i][4];
+    }
   }
 
   // save path to local storage so it can be accessed in Track page
@@ -233,24 +237,30 @@ document.getElementById('.csvfile').onchange = function() {
   reader.onload = function(progressEvent) {
 
     var lines = this.result.split('\n');
+    lines.shift();
+
     for(var line = 0; line < lines.length; line++) {
-      if(lines[line].includes("150.671875")) {
+      // if(lines[line].includes("150.671875")) {
+      // if( line != 0 ) {
 
         var stringArray = lines[line].split(','); //values per row
 
-        stringArray[0] = parseInt(stringArray[0])+25;
+        // stringArray[0] = parseInt(stringArray[0])+25;
+        stringArray[0] = parseInt(stringArray[0]) + Math.round( (line % 64) * .59 );
         sdrDATA.push(stringArray);
 
-        var secondRow = []
-        secondRow[0] = parseInt(stringArray[0])+1;
-        secondRow[1] = stringArray[1];
-        secondRow[2] = stringArray[2]
-        sdrDATA.push(secondRow);
-      }
+        // var secondRow = []
+        // secondRow[0] = parseInt(stringArray[0])+1;
+        // secondRow[1] = stringArray[1];
+        // secondRow[2] = stringArray[2]
+        // sdrDATA.push(secondRow);
+      // }
     }
     console.log("data: ", sdrDATA);
     if (sdrDATA.length > 0) {
-      if (gpsDATA.length > 0) { sync(); }
+      if (gpsDATA.length > 0) {
+        sync();
+      }
     }
   };
   reader.readAsText(file);
@@ -265,42 +275,44 @@ document.getElementById('.nmeafile').onchange = function() {
     // var table = document.getElementById("myTable");
     var lines = this.result.split('\n'); // read per line
     for(var line = 0; line < lines.length; line++) {
-     gpsArray = []
-     if(lines[line].includes("GGA")) { // only read $GPGGA data Rows
 
-       var stringArray = lines[line].split(' '); //values per row
-       var stringArray2 = stringArray[2].split(',');  // lat and long values in the second half of row
+      gpsArray = []
+      if(lines[line].includes("GGA")) { // only read $GPGGA data Rows
 
-       var parsedUnixTime = new Date(stringArray[0] + ' ' + stringArray[1] + ' UTC').getUnixTime(); // UTC timestamp
+        var stringArray = lines[line].split(' ');       //values per row
+        var stringArray2 = stringArray[2].split(',');   // lat and long values in the second half of row
 
-       // lattitude value calculator
-       var lat = stringArray2[2].split('.'); // find . character to splt lat
-       var latDeg = lat[0].slice(0,-2); // pull degree value from lat, first 2 or 3 digits
-       if (stringArray2[3] == 'S') { // negative degrees if S
+        var parsedUnixTime = new Date(stringArray[0] + ' ' + stringArray[1] + ' UTC').getUnixTime(); // UTC timestamp
+        // lattitude value calculator
+        var lat = stringArray2[2].split('.'); // find . character to splt lat
+        var latDeg = lat[0].slice(0,-2);      // pull degree value from lat, first 2 or 3 digits
+        if (stringArray2[3] == 'S') {         // negative degrees if S
          latDeg = latDeg * -1;
-       }
-       var latMin = (lat[0].slice(-2) + '.' + lat[1]) / 60; // take minutes value and divide by 60 seconds
-       latMin = latMin.toString().substring(1); // remove leading zero before .
+        }
+        var latMin = (lat[0].slice(-2) + '.' + lat[1]) / 60; // take minutes value and divide by 60 seconds
+        latMin = latMin.toString().substring(1);             // remove leading zero before .
 
-       // longitude value calculator
-       var lon = stringArray2[4].split('.'); // find . character to splt lat
-       var lonDeg = lon[0].slice(0,-2); // pull degree value from lat, first 2 or 3 digits
-       if (stringArray2[5] == 'W') { // negative degrees if S
+        // longitude value calculator
+        var lon = stringArray2[4].split('.'); // find . character to splt lat
+        var lonDeg = lon[0].slice(0,-2);      // pull degree value from lat, first 2 or 3 digits
+        if (stringArray2[5] == 'W') {         // negative degrees if S
          lonDeg = lonDeg * -1;
-       }
-       var lonMin = (lon[0].slice(-2) + '.' + lon[1]) / 60; // take minutes value and divide by 60 seconds
-       lonMin = lonMin.toString().substring(1); // remove leading zero before .
+        }
+        var lonMin = (lon[0].slice(-2) + '.' + lon[1]) / 60; // take minutes value and divide by 60 seconds
+        lonMin = lonMin.toString().substring(1);             // remove leading zero before .
 
-       gpsArray.push(parsedUnixTime-3600); //UTC timestamp - subtracting an entire hour because DST
-       gpsArray.push(latDeg + latMin) // lat
-       gpsArray.push(lonDeg + lonMin) // long
+        gpsArray.push(parsedUnixTime-3600); //UTC timestamp - subtracting an entire hour because DST
+        gpsArray.push(latDeg + latMin);     // lat
+        gpsArray.push(lonDeg + lonMin);     // long
 
-       gpsDATA.push(gpsArray);
-     }
+        gpsDATA.push(gpsArray);
+      }
     }
     console.log("data: ", gpsDATA);
     if (gpsDATA.length > 0) {
-      if (sdrDATA.length > 0) { sync(); }
+      if (sdrDATA.length > 0) {
+        sync();
+      }
     }
   };
   reader.readAsText(file);
