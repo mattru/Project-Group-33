@@ -102,7 +102,20 @@ img {
 }
 
 /* rawData page */
-table, td {
+#myTableDIV {
+  /* position: absolute; */
+  /* align: center; */
+  /* padding-left: 100px; */
+  /* stre */
+  height:900px;
+  width: auto;
+  overflow:auto;
+}
+table {
+  border: 1px solid black;
+  width: 100%;
+}
+td {
   border: 1px solid black;
 }
 
