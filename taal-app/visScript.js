@@ -458,15 +458,24 @@ function calculateHeatData(bearA, heat, interData) { //find all intersections be
 
 //find the weighted average of intersection data and plot it, or regular receiver data
 function averageData(interArray) {
-    var xNumer = 0; //mw :weighted average of x where summation(mw/w)
-    var yNumer = 0; //weighted average of y
+    var x = 0; //mw :weighted average of x where summation(mw/w), convert to coordinates from lat lng
+    var y = 0; //weighted average of y
+    var z = 0; //weighted average of z
     var denom = 0;
-    for (i = 0; i < interArray.length; i++) {
-        xNumer = xNumer + interArray[i].intensity * interArray[i].lng;
-        yNumer = yNumer + interArray[i].intensity * interArray[i].lat;
+    //summation and averaging through cartesian coordinates
+    for (i = 0; i < interArray.length; i++) { 
+        x = x + interArray[i].intensity * LatLngToCartesian(interArray[i], 0); //interArray[i].lng;
+        y = y + interArray[i].intensity * LatLngToCartesian(interArray[i], 1); //interArray[i].lat;
+        z = z + interArray[i].intensity * LatLngToCartesian(interArray[i], 2);
         denom = denom + interArray[i].intensity;
     }
-    var averageIntersection = new google.maps.LatLng(yNumer / denom, xNumer / denom); //data point of where average intersection is displayed
+    x = x / denom;
+    y = y / denom;
+    z = z / denom;
+    var sumLat = 180 * Math.acos(z, Math.sqrt(x * x + y * y)) / Math.PI;
+    var sumLng = 180 * Math.atan2(y, x) / Math.PI;
+    //console.log(sumLat,sumLng);
+    var averageIntersection = new google.maps.LatLng(sumLat, sumLng); //data point of where average intersection is displayed
     //console.log(interArray[1].intensity);
     //initialize average point display
     avgMarker.setOptions({
@@ -475,6 +484,18 @@ function averageData(interArray) {
     loadMap.setOptions({
         center: averageIntersection
     });
+}
+
+function LatLngToCartesian(innerLatLng, flag) { //return x, y, or z based on flags 0, 1, or 2
+    var x = Math.sin(Math.PI * innerLatLng.lat / 180) * Math.cos(Math.PI * innerLatLng.lng / 180)
+    var y = Math.sin(Math.PI * innerLatLng.lat / 180) * Math.sin(Math.PI * innerLatLng.lng / 180)
+    var z = Math.cos(Math.PI * innerLatLng.lat / 180)
+    if (flag == 0)
+        return x;
+    else if (flag == 1)
+        return y;
+    else
+        return z;
 }
 
 function medianData(interArray) { //take median intersection point of dataset, O(nlogn)
