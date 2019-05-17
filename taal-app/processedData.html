@@ -22,22 +22,27 @@
       <button id="tline" style="display: none" onclick="toggleLines()">Toggle Bearing Line Visibility</button>
       <button onclick="toggleOpacity()">Toggle Heatmap Visibility</button>
       <button onclick="changeRadius()">Change Heatmap Radius</button>
+
+      <div class="modal-body">
       Select Configuration Type:
       <select onchange="changeForm(this.selectedIndex);">
         <option value="0">1 Receiver</option>
         <option value="1">3 Receivers</option>
       </select>
-      <form id="1-set" action="javascript:begin1();" style="display: block">
+      </div>
 
+      <form id="1-set" action="javascript:begin1();" style="display: block">
         Select CSV File:
         <input name="uploadfile_1" type="file" id="u1" accept=".csv" value="Browse" required="required">
-        <br>
+        
+        
         Frequency:
         <input name="freqVal" type="number" step="any" id="f1" value="150.671875" required="required">
         <input type="submit" value="Create Map From File">
 
         <input type="reset" value="Clear">
       </form>
+
       <form id="3-set" action="javascript:begin3();" style="display: none">
         Select Files -
         Front:
@@ -54,14 +59,14 @@
         <input type="submit" value="Create Map">
         <input type="reset" value="Clear">
       </form>
-      <br>
 
       <form id="generate-data" action="javascript:localBegin();" style="display: block">
         Select Frequency for Stored Data:
         <input name="freqVal" type="number" step="any" id="localFreq" value="150.671875" required="required">
         <br>
-        <input type="submit" value="Create Map using Stored Data">
+        <input type="submit" value="Create Map using Stored Data" style="width: 100px;">
       </form>
+
       <script>
         function changeForm(flag) {
           var x = document.getElementById("1-set");

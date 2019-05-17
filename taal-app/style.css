@@ -193,6 +193,11 @@ td {
     padding: 20px;
 }
 
+.modal-body-one {
+    padding: 20px;
+    width: 150px;
+}
+
 .modal-footer {
     display: flex;
     justify-content: flex-end;
