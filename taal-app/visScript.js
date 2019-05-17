@@ -103,8 +103,8 @@ function begin1() { //single file upload
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
         for (var i = 1; i < lines.length; i++) {
-            if (isNaN((lines[i].toString()).split(',')[1]) || isNaN(parseFloat((lines[i].toString()).split(',')[2])) || isNaN(parseFloat((lines[i].toString()).split(',')[3])) || isNaN(parseFloat((lines[i].toString()).split(',')[4])))
-                return alert("Error: Invalid .csv column format.");
+            // if (isNaN((lines[i].toString()).split(',')[1]) || isNaN(parseFloat((lines[i].toString()).split(',')[2])) || isNaN(parseFloat((lines[i].toString()).split(',')[3])) || isNaN(parseFloat((lines[i].toString()).split(',')[4])))
+                // return alert("Error: Invalid .csv column format.");
             if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
                 dataArray1.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
                 if (dataArray1.length == 1) //find minimum
