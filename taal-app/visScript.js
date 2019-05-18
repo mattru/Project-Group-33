@@ -1,5 +1,6 @@
 //To Do: Add html error messages if not all files are added or aren't .csv files
 //****** Fix median function... guess: lat lng coordinates different than cartesian coordinate system */
+//****** Fix three receiver data importing */
 /*var sync = JSON.parse(sessionStorage.getItem('syncDATA'));
 var varsyncDATA = new Array();
 if (sync != null) {
@@ -97,13 +98,15 @@ function begin1() { //single file upload
             for (var j = 0; j < data.length; j++) {
                 tarr.push(data[j]);
             }
-            lines.push(tarr);
+            if (!(!tarr[0] || /^\s*$/.test(tarr[0])))
+                lines.push(tarr);
         }
+        console.log(lines);
         //console.log((lines[1].toString()).split(',')[2]); //second row, third column
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
         for (var i = 1; i < lines.length; i++) {
-            if (isNaN((lines[i].toString()).split(',')[1]) || isNaN(parseFloat((lines[i].toString()).split(',')[2])) || isNaN(parseFloat((lines[i].toString()).split(',')[3])) || isNaN(parseFloat((lines[i].toString()).split(',')[4])))
+            if (isNaN(parseFloat((lines[i].toString()).split(',')[1])) || isNaN(parseFloat((lines[i].toString()).split(',')[2])) || isNaN(parseFloat((lines[i].toString()).split(',')[3])) || isNaN(parseFloat((lines[i].toString()).split(',')[4])))
                 return alert("Error: Invalid .csv column format.");
             if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
                 dataArray1.push({ intensity: parseFloat((lines[i].toString()).split(',')[2]), lat: parseFloat((lines[i].toString()).split(',')[3]), lng: parseFloat((lines[i].toString()).split(',')[4]) });
@@ -120,6 +123,7 @@ function begin1() { //single file upload
             max1 = Math.max(max1, temp);
             dataArray1[i].intensity = temp;
         }
+        //console.log(dataArray1);
         generate();
     };
     reader.readAsText(file);
@@ -146,12 +150,13 @@ function begin3() { //three file upload
             for (var j = 0; j < data.length; j++) {
                 tarr.push(data[j]);
             }
-            lines.push(tarr);
+            if (!(!tarr[0] || /^\s*$/.test(tarr[0])))
+                lines.push(tarr);
         }
         //console.log((lines[1].toString()).split(',')[2]); //second row, third column
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
-        for (var i = 1; i < lines.length; i++) {
+        for (var i = 1; i < lines.length-1; i++) {
             if (isNaN((lines[i].toString()).split(',')[1]) || isNaN(parseFloat((lines[i].toString()).split(',')[2])) || isNaN(parseFloat((lines[i].toString()).split(',')[3])) || isNaN(parseFloat((lines[i].toString()).split(',')[4])))
                 return alert("File 1: Invalid .csv column format.");
             if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
@@ -180,12 +185,13 @@ function begin3() { //three file upload
             for (var j = 0; j < data.length; j++) {
                 tarr.push(data[j]);
             }
-            lines.push(tarr);
+            if (!(!tarr[0] || /^\s*$/.test(tarr[0])))
+                lines.push(tarr);
         }
         //console.log((lines[1].toString()).split(',')[2]); //second row, third column
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
-        for (var i = 1; i < lines.length; i++) {
+        for (var i = 1; i < lines.length-1; i++) {
             if (isNaN((lines[i].toString()).split(',')[1]) || isNaN(parseFloat((lines[i].toString()).split(',')[2])) || isNaN(parseFloat((lines[i].toString()).split(',')[3])) || isNaN(parseFloat((lines[i].toString()).split(',')[4])))
                 return alert("File 2: Invalid .csv column format.");
             if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
@@ -214,12 +220,13 @@ function begin3() { //three file upload
             for (var j = 0; j < data.length; j++) {
                 tarr.push(data[j]);
             }
-            lines.push(tarr);
+            if (!(!tarr[0] || /^\s*$/.test(tarr[0])))
+                lines.push(tarr);
         }
         //console.log((lines[1].toString()).split(',')[2]); //second row, third column
         //find frequency specific intensity while finding local minimum intensity
         var localMin = 0;
-        for (var i = 1; i < lines.length; i++) {
+        for (var i = 1; i < lines.length-1; i++) {
             if (isNaN((lines[i].toString()).split(',')[1]) || isNaN(parseFloat((lines[i].toString()).split(',')[2])) || isNaN(parseFloat((lines[i].toString()).split(',')[3])) || isNaN(parseFloat((lines[i].toString()).split(',')[4])))
                 return alert("File 3: Invalid .csv column format.");
             if ((lines[i].toString()).split(',')[1] == freqFilter) { //default 150.671875
@@ -231,7 +238,7 @@ function begin3() { //three file upload
         }
         if (dataArray3.length == 0)
             return alert("No data found on frequency: " + freqFilter + " for .csv file 3.\n");
-        for (var i = 0; i < dataArray3.length; i++) //convert into intensity
+        for (var i = 0; i < dataArray3.length-1; i++) //convert into intensity
             dataArray3[i].intensity = dataArray3[i].intensity + Math.abs(localMin);
         if (dataArray1.length != dataArray2.length || dataArray2.length != dataArray3.length || dataArray3.length != dataArray1.length)
             return alert("Error: Data file lengths do not match.");
